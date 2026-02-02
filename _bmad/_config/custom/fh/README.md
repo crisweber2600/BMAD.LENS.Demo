@@ -18,6 +18,8 @@ node src/modules/fh/_module-installer/installer.js install
 
 For detailed setup steps, see `INSTALLATION.md`.
 
+For a guided setup checklist, see `prompts/bmad.fh.setup.prompt.md`.
+
 ## Quick Start
 
 ### Analyze Your Repository
@@ -87,7 +89,7 @@ The Scribe agent will:
 Get a complete understanding of what file types exist in your repository and how they're distributed.
 
 ### Configuration File Standardization
-Rename all config files to follow BMAD naming conventions (e.g., `config.yaml` → `bmad-config.yaml`).
+Rename all config files to follow BMAD naming conventions (e.g., `config.json` → `bmad-config.json`).
 
 ### Extension Validation
 Identify and resolve unsupported file types that can't be processed by standard tools.
@@ -97,13 +99,13 @@ After copying or merging repository structures, harmonize inconsistencies and br
 
 ## Configuration
 
-See `resources/file-type-standards.yaml` for supported extensions and naming conventions.
+See `resources/file-type-standards.md` for supported extensions and naming conventions.
 
 ## Module Structure
 
 ```
 src/modules/fh/
-├── module.yaml
+├── module.json
 ├── README.md
 ├── TODO.md
 ├── INSTALLATION.md
@@ -117,8 +119,10 @@ src/modules/fh/
 │   ├── execute-harmonization.spec.md
 │   └── update-documentation.spec.md
 ├── resources/
-│   ├── file-type-standards.yaml
-│   └── naming-conventions.yaml
+│   ├── file-type-standards.md
+│   └── naming-conventions.md
+├── prompts/
+│   └── bmad.fh.setup.prompt.md
 ├── docs/
 │   ├── architecture.md
 │   ├── user-guide.md

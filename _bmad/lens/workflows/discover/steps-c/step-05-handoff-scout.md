@@ -5,6 +5,20 @@ description: 'Hand off to SCOUT agent for deep analysis'
 
 # Step 5: Hand Off to SCOUT
 
+## ⚠️ MANDATORY - DO NOT SKIP THIS STEP
+
+**YOU MUST:**
+1. Display the deep scan prompt box (Section 3)
+2. WAIT for user to respond with [DEEP] or [SKIP]
+3. ONLY THEN proceed based on their choice
+
+**DO NOT:**
+- Skip directly to Navigator
+- Show "discovery complete" without the prompt
+- Assume user wants to skip
+
+---
+
 ## Goal
 Hand off to SCOUT agent to run the full discovery pipeline (DS → AC → GD).
 
@@ -295,19 +309,18 @@ This prevents accidental commits of:
 
 ---
 
-**IF user selected [DEEP] and SCOUT activated in AUTO mode:**
-- SCOUT agent now controls workflow
-- Executes DS → AC → GD on ALL projects in domain map sequentially
-- Each project gets complete documentation suite
-- Returns consolidated report when complete
+**IF user selected [DEEP]:**
+- Activate SCOUT agent by loading: {project-root}/_bmad/lens/agents/scout/scout.md
+- SCOUT will display its menu with DS, AC, GD options
+- User can select [AUTO] to run the full pipeline automatically
+- SCOUT will return to its menu after each operation completes
 - Total estimated time: 35-50 minutes for full scan
-- All artifacts stored in: {project-root}/_bmad-output/implementation-artifacts/
+- All artifacts stored in: {project-root}/docs/{Domain}/{Service}/
 
 **IF user selected [SKIP]:**
 - Return to Navigator menu with initial discovery available
 - Can trigger [DEEP] command anytime to start full pipeline
 - Initial reports available for reference
-
 
 **IF SCOUT not available:**
 - Discovery complete with basic reports
@@ -316,4 +329,4 @@ This prevents accidental commits of:
 
 ---
 
-**Note:** This step serves as a workflow handoff point. The discover workflow's job is to do initial scanning and prepare context. SCOUT AUTO mode takes over for comprehensive multi-project discovery, running DS → AC → GD on every service and microservice in the domain map.
+**Note:** This step hands off to SCOUT agent. SCOUT always displays its menu and returns to it after each operation, enabling users to run DS, AC, GD in sequence or use AUTO mode.

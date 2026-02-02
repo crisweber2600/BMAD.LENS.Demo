@@ -56,8 +56,8 @@ file-harmonizer (fh)
 │   └── update-documentation.md            # Phase 4: Documentation
 │
 ├── resources/
-│   ├── file-type-standards.yaml           # Standard mappings
-│   ├── naming-conventions.yaml            # Naming rules
+│   ├── file-type-standards.md             # Standard mappings
+│   ├── naming-conventions.md              # Naming rules
 │   └── templates/
 │       ├── inventory-report.md
 │       └── change-log-template.md
@@ -421,16 +421,16 @@ Phase 4: Documentation
 
 ### BMAD System Integration
 
-- Agents register in module.yaml
+- Agents register in module.json
 - Workflows available through BMAD menu system
 - Output stored in `_bmad-output/` directory
 - Follows BMAD naming conventions
 
 ### Configuration Integration
 
-- Reads from `module.yaml` configuration
-- References `file-type-standards.yaml`
-- Uses `naming-conventions.yaml` for rules
+- Reads from `module.json` configuration
+- References `file-type-standards.md`
+- Uses `naming-conventions.md` for rules
 - Respects BMAD exclusion patterns
 
 ---
@@ -487,11 +487,15 @@ agents/
 └── new-agent.md        ← Add here
 ```
 
-Register in `module.yaml`:
-```yaml
-install:
-  register_agents:
-    - new-agent
+Register in `module.json`:
+```json
+{
+  "install": {
+    "register_agents": [
+      "new-agent"
+    ]
+  }
+}
 ```
 
 ### Adding New Workflows
@@ -507,11 +511,15 @@ workflows/
 └── new-workflow.md     ← Add here
 ```
 
-Register in `module.yaml`:
-```yaml
-install:
-  register_workflows:
-    - new-workflow
+Register in `module.json`:
+```json
+{
+  "install": {
+    "register_workflows": [
+      "new-workflow"
+    ]
+  }
+}
 ```
 
 ### Custom Harmonization Rules
@@ -520,9 +528,9 @@ Add custom rules to `resources/`:
 
 ```
 resources/
-├── file-type-standards.yaml
-├── naming-conventions.yaml
-└── custom-rules.yaml   ← Add here
+├── file-type-standards.md
+├── naming-conventions.md
+└── custom-rules.json   ← Add here
 ```
 
 ---

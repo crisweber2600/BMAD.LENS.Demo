@@ -18,7 +18,7 @@ src/modules/fh/
 
 Verify all files are present:
 ```
-✅ module.yaml
+✅ module.json
 ✅ README.md
 ✅ agents/
 ✅ workflows/
@@ -294,7 +294,7 @@ rm -rf src/modules/fh/
 /fh status
 
 # View configuration
-cat src/modules/fh/module.yaml
+cat src/modules/fh/module.json
 
 # View installation logs
 node installer.js install 2>&1 | tee installation.log

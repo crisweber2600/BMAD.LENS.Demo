@@ -116,15 +116,15 @@ Proceed? [Y]es / [P]review / [N]o
 DRY RUN - NO CHANGES YET
 
 File Renamings (88 total):
-  config.yaml → bmad-config.yaml (12 files)
-  config.yml → bmad-config.yaml (8 files)
-  config.json → bmad-config.yaml (6 files)
-  settings.yml → settings.yaml (5 files)
+  config.json → bmad-config.json (12 files)
+  config.ini → bmad-config.json (8 files)
+  config.toml → bmad-config.json (6 files)
+  settings.ini → settings.json (5 files)
   data.bin → data.data (3 files)
   ... (54 more)
 
 Reference Updates (127 total):
-  Within module.yaml: 15
+  Within module.json: 15
   Within installer.js: 8
   Within README.md: 23
   ... (81 more)
@@ -173,8 +173,8 @@ DOCUMENTATION REFERENCE UPDATE
 Scanned: 34 documentation files
 
 References Updated: 52
-  - _bmad/config.yaml: 8 refs
-  - _bmad/module.yaml: 12 refs
+  - _bmad/bmad-config.json: 8 refs
+  - _bmad/module.json: 12 refs
   - docs/architecture.md: 18 refs
   - docs/examples.md: 14 refs
 

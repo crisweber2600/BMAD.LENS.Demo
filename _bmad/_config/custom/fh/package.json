@@ -48,8 +48,10 @@
         "agents/",
         "workflows/",
         "resources/",
+        "prompts/",
         "docs/",
         "_module-installer/",
+        "module.json",
         "module.yaml",
         "README.md",
         "TODO.md",
@@ -80,8 +82,8 @@
             "update-documentation"
         ],
         "resources": [
-            "file-type-standards.yaml",
-            "naming-conventions.yaml"
+            "file-type-standards.md",
+            "naming-conventions.md"
         ],
         "capabilities": [
             "file_inventory",

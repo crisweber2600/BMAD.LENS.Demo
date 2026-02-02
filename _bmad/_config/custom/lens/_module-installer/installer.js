@@ -468,3 +468,23 @@ async function installExtensionAssets({ projectRoot, logger, extensionName }) {
     // Extensions are now installed via installExtension()
     logger.warn(`installExtensionAssets is deprecated, use installExtension instead`);
 }
+
+// CLI entry point
+if (require.main === module) {
+    const logger = {
+        log: console.log,
+        warn: console.warn,
+        error: console.error
+    };
+
+    const projectRoot = process.cwd();
+
+    install({ projectRoot, logger, installedIDEs: ['github-copilot'] })
+        .then(success => {
+            process.exit(success ? 0 : 1);
+        })
+        .catch(error => {
+            logger.error(`Fatal error: ${error.message}`);
+            process.exit(1);
+        });
+}

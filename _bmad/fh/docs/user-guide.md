@@ -153,13 +153,13 @@ Apply default rules?
 DRY RUN PREVIEW (No Changes Yet)
 
 Files to be renamed (42 total):
-  config.yaml → bmad-config.yaml (6 files)
-  config.yml → bmad-config.yaml (8 files)
+   config.json → bmad-config.json (6 files)
+   config.ini → bmad-config.json (8 files)
   .bin → .data (2 files)
   ...
 
 Internal References to Update:
-  15 references in module.yaml
+   15 references in module.json
   8 references in installer.js
   ...
 
@@ -172,12 +172,12 @@ Proceed with execution? [Y]es / [N]o
 HARMONIZATION IN PROGRESS...
 
 ✅ Renaming files (42/42)
-  ✅ src/config.yaml → src/bmad-config.yaml
-  ✅ config.yaml → bmad-config.yaml
+   ✅ src/config.json → src/bmad-config.json
+   ✅ config.json → bmad-config.json
   ...
 
 ✅ Updating internal references (47/47)
-  ✅ Updated module.yaml
+   ✅ Updated module.json
   ✅ Updated installer.js
   ...
 
@@ -213,8 +213,8 @@ DOCUMENTATION REFERENCE UPDATE
 Files Scanned: 23 documentation files
 
 References Updated:
-  - _bmad/config.yaml (5 references)
-  - _bmad/module.yaml (3 references)
+   - _bmad/bmad-config.json (5 references)
+   - _bmad/module.json (3 references)
   - docs/guide.md (7 references)
   ...
 
@@ -429,9 +429,9 @@ Contains detailed record of:
 3. **Create Mapping:**
    Define rules for all inconsistencies:
    ```
-   - module.yaml → app-module.yaml
+   - module.json → app-module.json
    - test.js → scout-test.js
-   - old-config.yaml → bmad-config.yaml
+   - old-config.json → bmad-config.json
    ```
 
 4. **Execute Full Harmonization:**
@@ -458,7 +458,7 @@ Contains detailed record of:
    ```
 
 2. **Check Against Standards:**
-   Review report against `resources/naming-conventions.yaml`
+   Review report against `resources/naming-conventions.md`
 
 3. **Create Correction Rules:**
    Map non-standard names to standard ones
@@ -616,7 +616,7 @@ After successfully harmonizing your repository:
    ```
 
 2. **Update Team Documentation:**
-   Share new naming standards from `resources/naming-conventions.yaml`
+   Share new naming standards from `resources/naming-conventions.md`
 
 3. **Set Up Validation:**
    Consider adding pre-commit hooks to enforce standards

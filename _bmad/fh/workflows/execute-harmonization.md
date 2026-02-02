@@ -104,12 +104,12 @@ Execution / Refactor
 **Total Operations:** 47
 
 ### File Renamings (42)
-- config.yaml → bmad-config.yaml
-- src/config.yaml → src/bmad-config.yaml
+- config.json → bmad-config.json
+- src/config.json → src/bmad-config.json
 - ... (all operations listed)
 
 ### Reference Updates (47)
-- Updated reference in module.yaml
+- Updated reference in module.json
 - Updated require in installer.js
 - ... (all updates listed)
 

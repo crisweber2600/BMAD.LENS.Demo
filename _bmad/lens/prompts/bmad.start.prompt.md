@@ -453,7 +453,7 @@ If extensions have issues but core is healthy:
 - Status: ⚠️ WARNING (not blocking)
 - Auto-skip in Phase 5 (can't initialize what's not installed)
 - Offer: `[I] Install {name}` → Run module installer after activation
-- Guide: "Navigate to extension installer or run: `npx bmad-method@alpha install`"
+- Guide: "Run the local extension installer, e.g. `node _bmad/lens/extensions/{name}/_module-installer/installer.js install` (installed project) or `node src/modules/lens/extensions/{name}/_module-installer/installer.js install` (source repo). If you are using the standard BMAD package without local sources, run: `npx bmad-method@alpha install`"
 
 **Extension Partially Configured:**
 - Status: ⚠️ NEEDS INITIALIZATION (will be fixed in Phase 5)

@@ -29,6 +29,54 @@ agent:
     - 'Load COMPLETE file {project-root}/_bmad/_memory/scout-sidecar/instructions.md'
     - 'ONLY read/write files in {project-root}/_bmad/_memory/scout-sidecar/'
 
+  # MENU PERSISTENCE RULES - CRITICAL
+  menu_behavior:
+    always_show_menu: true
+    return_to_menu_after_action: true
+    menu_display_instructions: |
+      ## ⚠️ MANDATORY MENU BEHAVIOR
+      
+      **RULE 1: ALWAYS show the menu when SCOUT is activated**
+      Every time SCOUT is invoked (from Navigator, directly, or any workflow), 
+      you MUST display the SCOUT menu FIRST before doing anything else.
+      
+      **RULE 2: ALWAYS return to menu after completing any action**
+      After completing DS, AC, GD, or any other action, you MUST:
+      1. Show the completion status
+      2. Display the menu again
+      3. Wait for user's next selection
+      
+      **RULE 3: For AUTO/DEEP mode, show progress AND menu**
+      Even in full auto mode, after each phase (DS, AC, GD) show:
+      1. Phase completion status
+      2. Next phase starting
+      3. Final menu when all phases complete
+      
+      **MENU TEMPLATE (MUST DISPLAY):**
+      ```
+      ╭──────────────────────────────────────────────────────────────╮
+      │  🔍 SCOUT - Discovery Specialist                             │
+      ├──────────────────────────────────────────────────────────────┤
+      │  Available Commands:                                         │
+      │                                                              │
+      │  [DS]   Discover Service - Deep brownfield discovery        │
+      │         ⭐ RECOMMENDED for initial analysis                  │
+      │                                                              │
+      │  [AC]   Analyze Codebase - Technical analysis               │
+      │         APIs, data models, patterns, dependencies           │
+      │                                                              │
+      │  [GD]   Generate Docs - BMAD-ready documentation            │
+      │         Architecture, API refs, implementation guides       │
+      │                                                              │
+      │  [AUTO] Full Pipeline - Run DS → AC → GD automatically      │
+      │         Complete discovery for all projects                  │
+      │                                                              │
+      │  [NAV]  Return to Navigator                                  │
+      ╰──────────────────────────────────────────────────────────────╯
+      
+      Select a command:
+      ```
+
   menu:
     - trigger: AUTO or YOLO or fuzzy match on full auto
       exec: inline
@@ -122,15 +170,36 @@ agent:
         
         All discovery artifacts ready for use.
         ```
+        
+        ### 6. MANDATORY: Return to Menu
+        
+        **After displaying the final report, you MUST display the SCOUT menu again.**
+        Show the menu template from menu_behavior.menu_display_instructions.
 
     - trigger: DS or fuzzy match on discover
       exec: '{project-root}/_bmad/lens/workflows/discover/workflow.md'
       description: '[DS] Full brownfield discovery pipeline'
+      post_action: |
+        ## MANDATORY: After DS completes, display SCOUT menu
+        Show completion status, then display the SCOUT menu template.
+        Wait for user's next command selection.
 
     - trigger: AC or fuzzy match on analyze-codebase
       exec: '{project-root}/_bmad/lens/workflows/analyze-codebase/workflow.md'
       description: '[AC] Deep technical analysis without full discovery'
+      post_action: |
+        ## MANDATORY: After AC completes, display SCOUT menu
+        Show completion status, then display the SCOUT menu template.
+        Wait for user's next command selection.
 
     - trigger: GD or fuzzy match on generate-docs
       exec: '{project-root}/_bmad/lens/workflows/generate-docs/workflow.md'
       description: '[GD] Generate BMAD-ready docs from analysis'
+      post_action: |
+        ## MANDATORY: After GD completes, display SCOUT menu
+        Show completion status, then display the SCOUT menu template.
+        Wait for user's next command selection.
+
+    - trigger: NAV or fuzzy match on navigator or back
+      exec: '{project-root}/_bmad/lens/agents/navigator.agent.yaml'
+      description: '[NAV] Return to Navigator'
