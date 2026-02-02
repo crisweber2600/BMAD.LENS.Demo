@@ -1,0 +1,26 @@
+# LENS Module Configuration
+# Default detection rules and settings
+
+branch_patterns:
+  domain:
+    - "main"
+    - "develop"
+    - "release/*"
+    - "hotfix/*"
+  service:
+    - "service/{name}"
+  microservice:
+    - "service/{service}/{name}"
+  feature:
+    - "feature/{service}/{microservice}/{name}"
+
+notification_level: smart
+session_store: "_bmad/lens/lens-session.yaml"
+domain_map: "_bmad/lens/domain-map.yaml"
+service_registry: "_bmad/lens/service-registry.yaml"
+lens_config: "_bmad/lens/lens-config.yaml"
+constitution_root: "_bmad/lens/constitutions"
+
+# Documentation output - follows TargetProjects domain/service structure
+# Output: docs/{domain}/{service}/
+docs_output_folder: "docs"

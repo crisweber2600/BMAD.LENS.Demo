@@ -1,0 +1,32 @@
+code: lens
+name: "LENS Sync & Discovery"
+header: "Sync architectural knowledge with physical reality"
+subheader: "Automated brownfield discovery and bi-directional lens synchronization"
+default_selected: false
+
+target_project_root:
+  prompt: "Where is the target project root to scan and sync?"
+  default: "{project-root}"
+  result: "{value}"
+
+enable_jira_integration:
+  prompt: "Enable JIRA integration during discovery?"
+  default: false
+  result: "{value}"
+
+discovery_depth:
+  prompt: "Default discovery depth?"
+  default: "standard"
+  result: "{value}"
+  single-select:
+    - value: "shallow"
+      label: "Shallow - faster, surface-level scan"
+    - value: "standard"
+      label: "Standard - balanced analysis"
+    - value: "deep"
+      label: "Deep - exhaustive analysis"
+
+docs_output_folder:
+  prompt: "Where should generated docs be written?"
+  default: "{project-root}/Docs"
+  result: "{value}"

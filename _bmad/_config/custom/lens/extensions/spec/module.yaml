@@ -1,0 +1,38 @@
+# SPEC Extension Module Configuration
+# Extension of LENS module
+# Generated: 2026-01-31
+
+code: lens
+name: "SPEC: Specification-Driven Enterprise Compass"
+header: "Constitutional governance for BMAD workflows"
+subheader: "Bridge Spec-Kit commands to BMAD with always-on governance via LENS"
+default_selected: false
+
+# Configuration prompts
+
+constitution_root:
+  prompt: "Where should constitutions be stored?"
+  default: "lens/constitutions"
+  result: "{value}"
+
+auto_compliance_check:
+  prompt: "Run compliance check before workflow execution?"
+  default: true
+  result: "{value}"
+
+strict_mode:
+  prompt: "Block workflow execution if constitution is missing?"
+  default: false
+  result: "{value}"
+
+# Context Extension
+# SPEC extends LENS context with constitutional governance data
+context_extension:
+  source: "data/context-extension.md"
+  resolver: "workflows/resolve-context/workflow.md"
+  variables:
+    - resolved_constitution
+    - constitution_chain
+    - constitution_article_count
+    - constitution_last_amended
+    - constitution_depth

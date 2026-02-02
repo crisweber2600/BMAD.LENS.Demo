@@ -1,0 +1,44 @@
+code: lens
+name: "LENS: Layered Enterprise Navigation System"
+header: "Git-aware architectural navigation with automated discovery and synchronization"
+subheader: "Detects and switches between architectural contexts, syncs with physical codebase, generates documentation"
+default_selected: false
+global: true
+
+# Discovery and Synchronization Configuration
+target_project_root:
+  prompt: "Where is the target project root to scan and sync?"
+  default: "{project-root}"
+  result: "{value}"
+
+enable_jira_integration:
+  prompt: "Enable JIRA integration during discovery?"
+  default: false
+  result: "{value}"
+
+discovery_depth:
+  prompt: "Default discovery depth?"
+  default: "standard"
+  result: "{value}"
+  single-select:
+    - value: "shallow"
+      label: "Shallow - faster, surface-level scan"
+    - value: "standard"
+      label: "Standard - balanced analysis"
+    - value: "deep"
+      label: "Deep - exhaustive analysis"
+
+docs_output_folder:
+  prompt: "Where should generated docs be written?"
+  default: "{project-root}/docs"
+  result: "{value}"
+
+lens_data_folder:
+  prompt: "Where should lens data be stored?"
+  default: "{project-root}/_bmad/lens"
+  result: "{value}"
+
+metadata_output_folder:
+  prompt: "Where should BMAD metadata be stored?"
+  default: "{project-root}/_bmad-output"
+  result: "{value}"

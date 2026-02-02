@@ -1,0 +1,308 @@
+---
+name: naming-conventions
+description: BMAD naming convention guidelines
+version: "1.0.0"
+created: "2026-02-02"
+---
+
+# BMAD Naming Conventions
+
+## File Naming Rules
+
+### Rule 1: Use Descriptive Names
+- ✅ `agent-scout.md` (descriptive, purpose clear)
+- ❌ `scout.md` (could be many things)
+- ❌ `a.md` (too generic)
+
+### Rule 2: Use Lowercase with Hyphens
+- ✅ `file-harmonizer` (lowercase, hyphen-separated)
+- ❌ `FileHarmonizer` (camelCase not preferred)
+- ❌ `file_harmonizer` (underscore not preferred)
+
+### Rule 3: Include Context Prefix
+- ✅ `agent-scout.md` (context = agent)
+- ✅ `workflow-analyze.md` (context = workflow)
+- ❌ `scout.md` (no context)
+- ❌ `analyze.md` (no context)
+
+### Rule 4: Use Standard Extensions
+- ✅ `.yaml` (BMAD standard)
+- ✅ `.md` (documentation standard)
+- ❌ `.yml` (use .yaml instead)
+- ❌ `.txt` (use .md for docs)
+
+### Rule 5: Configuration Files
+- ✅ `bmad-config.yaml` (BMAD standard)
+- ✅ `module-config.yaml` (descriptive)
+- ❌ `config.yaml` (too generic)
+- ❌ `configuration.yaml` (too long)
+
+---
+
+## Standard Prefixes
+
+### Agent Files
+```
+agent-{name}.md
+
+Examples:
+- agent-scout.md
+- agent-harmonizer.md
+- agent-scribe.md
+```
+
+### Workflow Files
+```
+workflow-{name}.md
+
+Examples:
+- workflow-analyze-repository.md
+- workflow-gather-rules.md
+- workflow-execute-harmonization.md
+```
+
+### Module Files
+```
+module-{feature}.yaml
+
+Examples:
+- module-config.yaml
+- module-installer.js
+- module-metadata.yaml
+```
+
+### Configuration Files
+```
+{context}-config.yaml
+
+Examples:
+- bmad-config.yaml
+- agent-config.yaml
+- workflow-config.yaml
+```
+
+### Resource Files
+```
+{type}-{name}.{ext}
+
+Examples:
+- file-type-standards.yaml
+- naming-conventions.yaml
+- default-rules.json
+```
+
+### Documentation Files
+```
+{section}-{topic}.md
+
+Examples:
+- getting-started.md
+- architecture-overview.md
+- api-reference.md
+```
+
+---
+
+## Context Prefixes
+
+| Prefix | Usage | Example |
+|--------|-------|---------|
+| `agent-` | Agent specification files | `agent-scout.md` |
+| `workflow-` | Workflow files | `workflow-analyze.md` |
+| `module-` | Module files | `module-config.yaml` |
+| `bmad-` | BMAD system files | `bmad-config.yaml` |
+| `spec-` | Specification documents | `spec-api.md` |
+| `example-` | Example files | `example-usage.md` |
+| `test-` | Test files | `test-scout.js` |
+| `doc-` | Documentation files | `doc-guide.md` |
+
+---
+
+## Naming Anti-Patterns (Avoid)
+
+### ❌ Generic Names Without Context
+```
+❌ config.yaml        → ✅ bmad-config.yaml
+❌ agent.md           → ✅ agent-scout.md
+❌ workflow.md        → ✅ workflow-analyze.md
+❌ spec.md            → ✅ spec-scout-agent.md
+```
+
+### ❌ Incorrect Case
+```
+❌ FileHarmonizer     → ✅ file-harmonizer
+❌ File_Harmonizer    → ✅ file-harmonizer
+❌ FILEHARMONIZER     → ✅ file-harmonizer
+```
+
+### ❌ Incorrect Separators
+```
+❌ file_harmonizer    → ✅ file-harmonizer
+❌ file.harmonizer    → ✅ file-harmonizer
+❌ fileharmonizer     → ✅ file-harmonizer
+```
+
+### ❌ Wrong Extensions
+```
+❌ config.yml         → ✅ config.yaml
+❌ readme.txt         → ✅ readme.md
+❌ module.json        → ✅ module.yaml
+```
+
+### ❌ Ambiguous Abbreviations
+```
+❌ cfg.yaml           → ✅ config.yaml
+❌ wf.md              → ✅ workflow.md
+❌ ag.md              → ✅ agent.md
+```
+
+---
+
+## Specific File Naming Standards
+
+### Agent Files
+```yaml
+# Standard format
+agent-{name}.md
+
+# Examples
+agent-scout.md
+agent-harmonizer.md
+agent-scribe.md
+
+# Should contain
+- agent name and code
+- role and personality
+- responsibilities
+- skills and capabilities
+```
+
+### Workflow Files
+```yaml
+# Standard format
+workflow-{purpose}.md
+
+# Examples
+workflow-analyze-repository.md
+workflow-gather-harmonization-rules.md
+workflow-execute-harmonization.md
+
+# Should contain
+- workflow purpose and goals
+- step-by-step process
+- inputs and outputs
+- success criteria
+```
+
+### Module Configuration
+```yaml
+# Standard format
+module.yaml (in module root)
+
+# Contains
+- module code and name
+- version and status
+- installation requirements
+- agent and workflow registration
+```
+
+### Configuration Files
+```yaml
+# Standard formats
+- bmad-config.yaml (system-wide BMAD config)
+- module-config.yaml (module-specific)
+- {feature}-config.yaml (feature-specific)
+
+# Examples
+- bmad-config.yaml
+- scout-config.yaml
+- harmonization-rules.yaml
+```
+
+### Documentation Files
+```markdown
+# Standard formats
+- README.md (module overview)
+- TODO.md (development tasks)
+- architecture.md (design docs)
+- user-guide.md (usage instructions)
+- examples.md (code examples)
+```
+
+### Resource Files
+```yaml
+# Standard format
+{type}-{name}.yaml
+
+# Examples
+- file-type-standards.yaml
+- naming-conventions.yaml
+- default-rules.yaml
+- templates/report-template.md
+```
+
+---
+
+## Module Naming Specifics
+
+### Module Codes (Short Form)
+- 2-3 lowercase letters
+- No hyphens or underscores
+- Examples: `fh`, `scout`, `lens`, `core`
+
+### Module Names (Full Form)
+- Use hyphens, not underscores
+- Descriptive but concise
+- Examples: `file-harmonizer`, `git-lens`, `lens-sync`
+
+### Module Directory Names
+- Match module code exactly
+- Lowercase only
+- No special characters except hyphens
+- Examples: `src/modules/fh/`, `src/modules/git-lens/`
+
+---
+
+## File Organization Naming
+
+### Directory Structure Naming
+
+```
+module-root/
+├── agents/              # Agent specifications
+├── workflows/           # Workflow definitions
+├── resources/           # Configuration and templates
+│   ├── templates/       # Output templates
+│   ├── file-type-standards.yaml
+│   └── naming-conventions.yaml
+├── _module-installer/   # Installation scripts
+├── docs/                # Documentation
+├── README.md            # Module overview
+├── TODO.md              # Development tasks
+└── module.yaml          # Module configuration
+```
+
+### Naming These Directories
+
+- Use lowercase only
+- Use hyphens for multi-word names
+- No special characters
+- Standard names where applicable
+
+```
+✅ agents/              (standard)
+✅ workflows/           (standard)
+✅ resources/           (standard)
+✅ _module-installer/   (standard)
+✅ docs/                (standard)
+
+❌ Agents/              (capitalization)
+❌ workflows_v2/        (version suffix bad)
+❌ resources-old/       (keep clean)
+```
+
+---
+
+**Status:** Active  
+**Last Updated:** 2026-02-02  
+**Version:** 1.0.0
