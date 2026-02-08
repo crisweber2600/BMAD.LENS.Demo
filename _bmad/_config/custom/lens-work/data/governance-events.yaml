@@ -1,0 +1,134 @@
+# Governance Event Types — lens-work module
+# Authoritative schema for governance events logged to event-log.jsonl
+# Referenced by: Scribe agent, compliance-check workflow, resolve-constitution workflow, constitution workflow
+
+event_types:
+
+  constitution-created:
+    description: "Logged when a new constitution is ratified"
+    fields:
+      timestamp:
+        type: string
+        format: ISO-8601
+        required: true
+      layer:
+        type: string
+        enum: [domain, service, microservice, feature]
+        required: true
+      name:
+        type: string
+        description: "Name of the entity (e.g., 'bmad', 'lens')"
+        required: true
+      articles_count:
+        type: integer
+        description: "Number of articles in the new constitution"
+        required: true
+      ratified_by:
+        type: string
+        description: "User who ratified the constitution"
+        required: true
+      git_commit_sha:
+        type: string
+        description: "Commit SHA for audit trail cross-reference"
+        required: true
+      initiative_id:
+        type: string
+        description: "Active initiative ID if applicable"
+        required: false
+
+  constitution-amended:
+    description: "Logged when an existing constitution is amended"
+    fields:
+      timestamp:
+        type: string
+        format: ISO-8601
+        required: true
+      layer:
+        type: string
+        enum: [domain, service, microservice, feature]
+        required: true
+      name:
+        type: string
+        description: "Name of the entity whose constitution was amended"
+        required: true
+      amendment_summary:
+        type: string
+        description: "Brief description of the amendment"
+        required: true
+      articles_added:
+        type: integer
+        description: "Number of new articles added"
+        required: true
+      articles_modified:
+        type: integer
+        description: "Number of existing articles modified"
+        required: true
+      git_commit_sha:
+        type: string
+        description: "Commit SHA for audit trail cross-reference"
+        required: true
+      initiative_id:
+        type: string
+        description: "Active initiative ID if applicable"
+        required: false
+
+  compliance-evaluated:
+    description: "Logged when an artifact is checked against resolved constitutional rules"
+    fields:
+      timestamp:
+        type: string
+        format: ISO-8601
+        required: true
+      artifact_path:
+        type: string
+        description: "Path to the evaluated artifact"
+        required: true
+      artifact_type:
+        type: string
+        description: "Type of artifact (e.g., prd, architecture-doc, story, code)"
+        required: true
+      constitution_resolved:
+        type: string
+        description: "Constitutions checked (e.g., 'domain/bmad + service/lens')"
+        required: true
+      pass_count:
+        type: integer
+        description: "Number of articles that passed compliance"
+        required: true
+      warn_count:
+        type: integer
+        description: "Number of articles with warnings (not verified)"
+        required: true
+      fail_count:
+        type: integer
+        description: "Number of articles that failed compliance"
+        required: true
+      initiative_id:
+        type: string
+        description: "Active initiative ID — REQUIRED for compliance events"
+        required: true
+
+  constitution-resolved:
+    description: "Logged when the inheritance chain is walked and articles resolved"
+    fields:
+      timestamp:
+        type: string
+        format: ISO-8601
+        required: true
+      target_layer:
+        type: string
+        enum: [domain, service, microservice, feature]
+        description: "The layer context being resolved"
+        required: true
+      layers_walked:
+        type: integer
+        description: "Number of layers in the resolved hierarchy"
+        required: true
+      total_articles:
+        type: integer
+        description: "Total articles in the resolved constitution"
+        required: true
+      initiative_id:
+        type: string
+        description: "Active initiative ID if applicable"
+        required: false

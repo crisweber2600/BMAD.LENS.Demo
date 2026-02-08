@@ -1,3 +1,12 @@
 # LENS - BMAD Method
+
+# LENS System Files - Never commit these
+_bmad/_memory/**/*.md
+_bmad/_memory/**/*.jsonl
+_bmad/_memory/**/*.json
+_bmad/lens/lens-session.yaml
+_bmad-output/personal/
+_bmad-output/implementation-artifacts/
+
+# Target Projects - Repository structure but not content
 /TargetProjects
-/_bmad-output/personal

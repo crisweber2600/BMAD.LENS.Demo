@@ -1,0 +1,35 @@
+# Canonical repo registry used by lens-work bootstrap/discovery flows.
+target_projects_path: TargetProjects
+
+repos:
+  - name: BMAD.Lens
+    local_path: TargetProjects/BMAD/LENS/BMAD.Lens
+    remote_url: https://github.com/crisweber2600/BMAD.Lens.git
+    default_branch: main
+    domain: BMAD
+    service: LENS
+    domain_prefix: bmad
+
+  - name: bmad.lens.demo
+    local_path: TargetProjects/BMAD/LENS/bmad.lens.demo
+    remote_url: https://github.com/crisweber2600/bmad.lens.demo.git
+    default_branch: main
+    domain: BMAD
+    service: LENS
+    domain_prefix: bmad
+
+  - name: bmad-chat
+    local_path: TargetProjects/BMAD/CHAT/bmad-chat
+    remote_url: https://github.com/crisweber2600/bmad-chat.git
+    default_branch: main
+    domain: BMAD
+    service: CHAT
+    domain_prefix: bmad
+
+  - name: bmadServer
+    local_path: TargetProjects/BMAD/CHAT/bmadServer
+    remote_url: https://github.com/crisweber2600/bmadServer.git
+    default_branch: main
+    domain: BMAD
+    service: CHAT
+    domain_prefix: bmad
