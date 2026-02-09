@@ -16,7 +16,7 @@ lens-work stores state and configuration under `_bmad-output/lens-work/`.
 | `_bmad-output/lens-work/initiatives/{id}.yaml` | Shared initiative config | committed |
 | `_bmad-output/lens-work/event-log.jsonl` | Append-only event log for recovery/audit | committed |
 | `_bmad-output/lens-work/domain-map.yaml` | Domain architecture map | committed |
-| `_bmad-output/lens-work/service-map.yaml` | Service-to-repo mapping | committed |
+| `_bmad/lens-work/service-map.yaml` | Service-to-repo mapping | committed |
 | `_bmad-output/lens-work/repo-inventory.yaml` | Discovered repo inventory | committed |
 | `_bmad-output/lens-work/constitutions/{layer}/{name}/constitution.md` | Constitution documents | committed |
 
@@ -24,7 +24,7 @@ lens-work stores state and configuration under `_bmad-output/lens-work/`.
 
 ## `state.yaml` (Personal State)
 
-> **Git-ignored.** Each collaborator has their own local copy. Tracks the individual user's current position in the initiative. Lane/size is NOT stored here -- read from initiative config instead.
+> **Git-ignored.** Each collaborator has their own local copy. Tracks the individual user's current position in the initiative. Size/size is NOT stored here -- read from initiative config instead.
 
 ```yaml
 # LENS Workbench State
@@ -38,8 +38,8 @@ active_branch: "chat/chat-spark-backend-alignment-50cf37/small-3"
 updated_at: "2026-02-05T22:44:19Z"
 
 current:
-  phase: p4
-  phase_name: "Implementation"
+  phase: p3
+  phase_name: "Solutioning"
   workflow: review
   workflow_status: completed
   review_completed_at: "2026-02-06T15:52:42Z"
@@ -95,7 +95,7 @@ initiative = load("_bmad-output/lens-work/initiatives/${state.active_initiative}
 
 # Step 3: Use both for workflow logic
 current_phase = state.current.phase
-lane = initiative.lane           # ALWAYS read lane/size from shared initiative config
+size = initiative.size           # ALWAYS read size/size from shared initiative config
 domain_prefix = initiative.domain_prefix
 target_repos = initiative.target_repos
 ```
@@ -104,13 +104,13 @@ target_repos = initiative.target_repos
 
 ## `initiatives/{id}.yaml` (Shared Initiative Config)
 
-> **Git-committed.** Shared across collaborators. Holds the canonical initiative definition, configuration, and size/lane assignment. Lane is always read from this file.
+> **Git-committed.** Shared across collaborators. Holds the canonical initiative definition, configuration, and size/size assignment. Size is always read from this file.
 
 ```yaml
 id: chat-spark-backend-alignment-50cf37
 name: "CHAT Spark Backend Alignment"
 layer: feature
-lane: small                        # Size assignment (small or large)
+size: small                        # Size assignment (small or large)
 domain: BMAD/CHAT
 domain_prefix: chat
 service: CHAT
@@ -176,7 +176,7 @@ branches:
 | `id` | string | Unique initiative identifier (`{sanitized_name}-{random_6char}`) |
 | `name` | string | Human-readable initiative name |
 | `layer` | enum | `domain`, `service`, `microservice`, `feature` |
-| `lane` | string | Size assignment: `small` or `large` (NOT `lead`) |
+| `size` | string | Size assignment: `small` or `large` (NOT `lead`) |
 | `domain` | string | Domain context (e.g., `BMAD/CHAT`) |
 | `domain_prefix` | string | Normalized prefix for branch naming (e.g., `chat`) |
 | `service` | string | Service context |
@@ -210,7 +210,7 @@ branches:
 |---------|-------------|---------|
 | `{domain}` | Domain prefix from initiative config | `chat` |
 | `{initiative_id}` | Unique initiative ID | `chat-spark-backend-alignment-50cf37` |
-| `{size}` | Size branch: `small` or `large` (NOT `lane` / `lead`) | `small` |
+| `{size}` | Size branch: `small` or `large` (old naming `lane` / `lead` is obsolete) | `small` |
 | `{phase_number}` | Phase number (1-based integer) | `1`, `2`, `3` |
 
 ### Branch Hierarchy
@@ -407,7 +407,7 @@ The following terminology changes apply throughout lens-work:
 
 | Old Term | New Term | Context |
 |----------|----------|---------|
-| `lane` | `size` | Branch topology (small/large) |
+| `size` | `size` | Branch topology (small/large) |
 | `lead` | `large` | The review/integration branch |
 | `Navigator` | `Compass` / `Scout` | Agent roles |
 | `lens/{slug}/...` | `{domain}/{id}/...` | Branch naming prefix |

@@ -60,6 +60,14 @@ agent:
       workflow: "{project-root}/_bmad/lens-work/workflows/governance/compliance-check/workflow.md"
       description: "[/compliance] Run compliance check on artifacts"
 
+    - trigger: /requirements or RQ or fuzzy match on requirements or quality
+      workflow: "{project-root}/_bmad/lens-work/workflows/governance/requirements-checklist/workflow.md"
+      description: "[/requirements] Analyze artifact quality with requirements checklist"
+
+    - trigger: /analyze or AZ or fuzzy match on analyze or cross-artifact
+      workflow: "{project-root}/_bmad/lens-work/workflows/governance/cross-artifact-analysis/workflow.md"
+      description: "[/analyze] Validate semantic coherence and traceability across artifacts"
+
     - trigger: /ancestry or AN or fuzzy match on ancestry or heritage
       workflow: "{project-root}/_bmad/lens-work/workflows/governance/ancestry/workflow.md"
       description: "[/ancestry] Show constitution inheritance chain"

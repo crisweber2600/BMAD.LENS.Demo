@@ -16,7 +16,7 @@ This document defines the branch hierarchy used by lens-work to manage initiativ
 
 ```
 Level 1: Initiative Base     {Domain}/{id}/base
-Level 2: Lanes              {Domain}/{id}/small, {Domain}/{id}/large
+Level 2: Sizes              {Domain}/{id}/small, {Domain}/{id}/large
 Level 3: Phases             {Domain}/{id}/{size}-{N}
 Level 4: Workflows          {Domain}/{id}/{size}-{N}-{workflow}
 ```
@@ -31,14 +31,14 @@ Root branch for the initiative. Created at init via `init-initiative` workflow. 
 
 **Rules:**
 - Created from `main` (or current HEAD) at initiative start
-- Never worked on directly — only receives merges from lanes
+- Never worked on directly — only receives merges from sizes
 - Protected: requires PR review for final PBR merge
 - One base branch per initiative
 - Pushed to remote immediately on creation
 
 ---
 
-### Level 2: Lanes
+### Level 2: Sizes
 
 ```
 {Domain}/{initiative_id}/small     # Small team (planning + implementation)
@@ -46,7 +46,7 @@ Root branch for the initiative. Created at init via `init-initiative` workflow. 
 {Domain}/{initiative_id}/large     # Large review (gate reviews)
 ```
 
-Lanes represent team-size-based workflow paths. Each size has its own lifecycle and phase progression. **Size is stored in the shared initiative config** (`initiatives/{id}.yaml`) — never in personal state.
+Sizes represent team-size-based workflow paths. Each size has its own lifecycle and phase progression. **Size is stored in the shared initiative config** (`initiatives/{id}.yaml`) — never in personal state.
 
 #### Size Definitions
 
@@ -102,7 +102,7 @@ Phases are sequential workflow stages within a size. Each phase branch is create
 
 1. **Sequential only:** P{N} must complete before P{N+1} can start
 2. **Completion = merged:** A phase is complete when its branch is merged into the size
-3. **Ancestry check:** `git merge-base --is-ancestor origin/{phase_branch} origin/{lane_branch}`
+3. **Ancestry check:** `git merge-base --is-ancestor origin/{phase_branch} origin/{size_branch}`
 4. **P1 auto-created:** `init-initiative` creates P1 branch automatically
 5. **P2–P4 lazy-created:** Created by router workflows on first access
 6. **Immediate push:** All phase branches pushed to remote on creation
@@ -248,7 +248,7 @@ workflow=$(echo "$branch_segment" | cut -d'-' -f3-)  # prd
 
 ## Related Workflows
 
-- **init-initiative:** Creates Level 1 (base) and Level 2 (lanes) branches
+- **init-initiative:** Creates Level 1 (base) and Level 2 (sizes) branches
 - **phase-lifecycle:** Creates Level 3 (phase) branches
 - **start-workflow / finish-workflow:** Creates and closes Level 4 (workflow) branches
 - **fix-state:** Detects and repairs topology drift

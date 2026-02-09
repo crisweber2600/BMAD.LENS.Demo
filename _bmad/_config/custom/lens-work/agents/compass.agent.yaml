@@ -64,11 +64,12 @@ agent:
         Display current context from two-file state:
         1. Load state.yaml for personal position
         2. Load initiatives/{active_initiative}.yaml for initiative config
-        3. Display:
+        3. Derive review_size from initiative.review_audience_map[state.current.phase]
+        4. Display:
            Initiative: {name} ({id})
            Lens: {layer}
            Phase: P{N} ({phase_name})
-           Size: {size}
+           Review audience: {review_size} (derived from phase)
            Branch: {branch}
            Gates: {gate_status_summary}
 
@@ -120,11 +121,11 @@ agent:
     # Context Commands
     - trigger: /switch or fuzzy match on switch or change context
       workflow: "{project-root}/_bmad/lens-work/workflows/utility/switch/workflow.md"
-      description: "[/switch] Switch active initiative, lens, phase, or size"
+      description: "[/switch] Switch active initiative, lens, or phase"
     
     - trigger: /context or fuzzy match on context or where am I
       action: "display_context"
-      description: "[/context] Display current context (initiative, lens, phase, size, branch)"
+      description: "[/context] Display current context (initiative, lens, phase, review audience, branch)"
     
     - trigger: /constitution or fuzzy match on constitution or governance
       workflow: "{project-root}/_bmad/lens-work/workflows/governance/constitution/workflow.md"
@@ -165,6 +166,15 @@ agent:
     - trigger: /recreate-branches or fuzzy match on recreate or recovery branches
       workflow: "{project-root}/_bmad/lens-work/workflows/utility/recreate-branches/workflow.md"
       description: "[/recreate-branches] Recreate missing git branches (recovery)"
+
+    # Credential & Configuration Commands
+    - trigger: /credentials or fuzzy match on pat or token or credentials
+      workflow: "{project-root}/_bmad/lens-work/workflows/utility/manage-credentials/workflow.md"
+      description: "[/credentials] Add, update, or view git host credentials (PATs)"
+
+    - trigger: /onboard or fuzzy match on setup or onboard
+      workflow: "{project-root}/_bmad/lens-work/workflows/utility/onboarding/workflow.md"
+      description: "[/onboard] Full onboarding (profile + credentials + repo reconciliation)"
 
     # Utility Commands
     - trigger: H or fuzzy match on help or menu

@@ -46,6 +46,20 @@ We hold these principles to ensure consistency, security, quality, and maintaina
 
 ---
 
+### Article Enforcement Levels
+
+By default, all articles are **MANDATORY** — violations produce **FAIL** (blocking) during compliance checks.
+
+To make an article advisory (non-blocking), add `(ADVISORY)` suffix to the article header:
+
+> Example: `### Article VI: Documentation Standards (ADVISORY)`
+
+- **MANDATORY** (default) — Violations produce FAIL, block compliance
+- **(ADVISORY)** — Violations produce WARN only, non-blocking
+- **(NON-NEGOTIABLE)** — Valid for documentation clarity, but has no behavioral effect (all non-ADVISORY articles already default to FAIL enforcement)
+
+---
+
 ## Amendments
 
 (none)

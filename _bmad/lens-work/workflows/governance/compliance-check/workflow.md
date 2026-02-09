@@ -116,19 +116,26 @@ compliance_result:
 For each article in the resolved constitution, evaluate the artifact:
 
 1. Read the article's rule and evidence requirements
-2. Search the artifact for:
+
+2. **Determine enforcement level** by parsing the article header:
+   - Match header against regex: `^###\s+Article\s+\w+:.*\(ADVISORY\)`
+   - If `(ADVISORY)` marker is present → enforcement = **ADVISORY** (max severity: WARN)
+   - If `(ADVISORY)` marker is absent → enforcement = **MANDATORY** (default; max severity: FAIL)
+   - Note: `(NON-NEGOTIABLE)` marker is valid for documentation clarity but has **no behavioral effect** — all non-ADVISORY articles already default to FAIL enforcement
+
+3. Search the artifact for:
    - Direct mention of the requirement
    - Section addressing the topic
    - Evidence matching the required evidence type
    - Implicit compliance through design/content
 
-3. Classify each article:
+4. Classify each article (enforcement-aware):
    - **PASS** — Clear evidence of compliance found in artifact
-   - **WARN** — Topic not addressed, may need attention (not verified)
-   - **FAIL** — Direct contradiction or explicit non-compliance found
+   - **WARN** — Topic not addressed or only partially addressed (not verified). Also the maximum severity for `(ADVISORY)` articles — even explicit non-compliance produces WARN, never FAIL.
+   - **FAIL** — Direct contradiction or explicit non-compliance found. **Only applies to MANDATORY articles.** If the article is `(ADVISORY)`, cap the result at WARN instead.
 
 ```
-Evaluating Article {id}: {title}...
+Evaluating Article {id}: {title} [{MANDATORY|ADVISORY}]...
 ```
 
 ---
@@ -152,23 +159,27 @@ Date: {today_date}
 
 ### Verdict
 
-Determine overall verdict:
-- Any FAIL → **NON-COMPLIANT**
+Determine overall verdict (enforcement-aware):
+- Any FAIL from a **MANDATORY** article → **NON-COMPLIANT**
 - All PASS → **COMPLIANT**
-- Mix of PASS and WARN → **CONDITIONAL PASS**
+- Mix of PASS and WARN (including ADVISORY-capped WARNs) → **CONDITIONAL PASS**
+
+Note: `(ADVISORY)` article violations are capped at WARN and **never** trigger NON-COMPLIANT.
 
 ```
 {if COMPLIANT:}
 ✅ VERDICT: COMPLIANT
-All {article_count} articles satisfied.
+All {article_count} articles satisfied ({mandatory_count} mandatory, {advisory_count} advisory).
 
 {if CONDITIONAL PASS:}
 ⚠️ VERDICT: CONDITIONAL PASS
-{pass_count} satisfied, {warn_count} not verified, 0 violations.
+{pass_count} satisfied, {warn_count} not verified (includes {advisory_warn_count} advisory), 0 mandatory violations.
 
 {if NON-COMPLIANT:}
 ❌ VERDICT: NON-COMPLIANT
-{fail_count} violation(s) detected.
+{fail_count} mandatory violation(s) detected.
+{if advisory_warn_count > 0:}
+Additionally: {advisory_warn_count} advisory warning(s) (non-blocking).
 ```
 
 ### Detailed Results
@@ -178,18 +189,22 @@ All {article_count} articles satisfied.
 
 {for each article:}
 
-{PASS|WARN|FAIL} Article {id}: {title} — {status}
+{PASS|WARN|FAIL} [{MANDATORY|ADVISORY}] Article {id}: {title} — {status}
 
   {if PASS:}
+  Enforcement: {MANDATORY|ADVISORY}
   Evidence: {evidence_quote_or_section}
   Location: {section_reference}
 
   {if WARN:}
+  Enforcement: {MANDATORY|ADVISORY}
   Expected: {expected_evidence}
   Found: No mention of {topic}
+  {if ADVISORY:} ℹ️ Advisory article — this warning is non-blocking
   Recommendation: Add section addressing {requirement}
 
   {if FAIL:}
+  Enforcement: MANDATORY
   Issue: {violation_description}
   Location: {section_reference}
   Required Action: {remediation}
@@ -203,6 +218,8 @@ All {article_count} articles satisfied.
 ## Summary
 
 N/total PASS | N/total WARN | N/total FAIL
+
+Articles: {mandatory_count} mandatory, {advisory_count} advisory
 
 {if recommendations:}
 ## Recommendations

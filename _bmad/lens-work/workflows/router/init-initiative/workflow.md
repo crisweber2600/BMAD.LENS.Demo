@@ -125,7 +125,7 @@ elif layer == "feature":
 
 ```yaml
 # Domain prefix for branch naming
-# Determines the {Domain} segment of branch names: {Domain}/{InitiativeId}/{size}-{N}-{workflow}
+# Determines the {Domain} segment of branch names: {Domain}/{InitiativeId}-{audience}-p{N}-{workflow}
 normalize_domain_prefix(input):
   token = input or ""
   if token contains "/":
@@ -204,9 +204,10 @@ params:
   
 # Casey creates (ALL pushed immediately to remote):
 # - ${domain_prefix}/${initiative_id}/base
-# - ${domain_prefix}/${initiative_id}/small
-# - ${domain_prefix}/${initiative_id}/large
-# - ${domain_prefix}/${initiative_id}/small-1
+# - ${domain_prefix}/${initiative_id}-small    (review audience: small — p1 PRs target here)
+# - ${domain_prefix}/${initiative_id}-medium   (review audience: medium — p2 PRs target here)
+# - ${domain_prefix}/${initiative_id}-large    (review audience: large — p3/p4 PRs target here)
+# - ${domain_prefix}/${initiative_id}-small-p1 (phase 1 branch, first working branch)
 ```
 
 ### 6. Write Initiative Config (Git-Committed)
@@ -217,7 +218,6 @@ Create directory and file at `{project-root}/_bmad-output/lens-work/initiatives/
 id: ${initiative_id}
 name: "${initiative_name}"
 layer: ${layer}
-size: small                    # Size is stored in shared config — canonical for all collaborators
 domain: ${domain}
 domain_prefix: ${domain_prefix}
 service: ${service}
@@ -235,16 +235,25 @@ docs:
   repo: "${docs_repo}"
   feature: "${docs_feature}"
   path: "${docs_path}"
+review_audience_map:           # Phase → review audience size
+  p1: small
+  p2: medium
+  p3: large
+  p4: large
 gates:
   - name: tests-pass
     status: open
 blocks: []
 branches:
   base: "${domain_prefix}/${initiative_id}/base"
-  active: "${domain_prefix}/${initiative_id}/small-1"
+  audiences:
+    small: "${domain_prefix}/${initiative_id}-small"
+    medium: "${domain_prefix}/${initiative_id}-medium"
+    large: "${domain_prefix}/${initiative_id}-large"
+  active: "${domain_prefix}/${initiative_id}-small-p1"
 ```
 
-> **Note:** This file is committed to the repo and shared across collaborators. It holds the canonical initiative definition, configuration, and **size assignment**. Size is always read from this file, never from personal state.
+> **Note:** This file is committed to the repo and shared across collaborators. It holds the canonical initiative definition, the **review audience map** (phase → audience size), and branch topology. The audience map determines which review branch each phase's PR targets.
 
 ### 7. Write Personal State (Git-Ignored)
 
@@ -259,7 +268,7 @@ current:
   workflow_status: pending
 ```
 
-> **Note:** This file is git-ignored. It tracks the individual user's current position in the initiative. Each collaborator has their own local copy. Size is NOT stored here — read from initiative config instead.
+> **Note:** This file is git-ignored. It tracks the individual user's current position in the initiative. Each collaborator has their own local copy. Review audience is NOT stored here — derived from phase via initiative config's review_audience_map.
 
 ### 8. Log Event
 
@@ -272,8 +281,8 @@ Append to `{project-root}/_bmad-output/lens-work/event-log.jsonl`:
 ### 9. Commit Initiative Config
 
 ```bash
-# Ensure on small-1 branch (phase 1)
-git checkout "${domain_prefix}/${initiative_id}/small-1"
+# Ensure on small-p1 branch (phase 1)
+git checkout "${domain_prefix}/${initiative_id}-small-p1"
 
 # Stage initiative config and event log (NOT state.yaml — it's git-ignored)
 git add "_bmad-output/lens-work/initiatives/${initiative_id}.yaml"
@@ -285,20 +294,22 @@ git commit -m "init(${initiative_id}): Create ${layer} initiative '${initiative_
 Initiative: ${initiative_id}
 Layer: ${layer}
 Domain: ${domain}
-Size: small
 Target repos: ${target_repos}
 
+Review audience progression:
+  p1 → small | p2 → medium | p3 → large | p4 → large
+
 Creates:
-- Branch topology: base, small, large, small-1
-- Initiative config: initiatives/${initiative_id}.yaml (includes size)
+- Branch topology: base, -small, -medium, -large, -small-p1
+- Initiative config: initiatives/${initiative_id}.yaml (includes review_audience_map)
 - Event log entry
 
-Branch pattern: {Domain}/{InitiativeId}/{size}-{phaseNumber}-{workflow}
+Branch pattern: {Domain}/{id}-{audience}-p{N}-{workflow}
 State architecture: two-file (personal state + shared initiative config)
 Ready for /pre-plan workflow."
 
-# Push to small-1 branch
-git push -u origin "${domain_prefix}/${initiative_id}/small-1"
+# Push to small-p1 branch
+git push -u origin "${domain_prefix}/${initiative_id}-small-p1"
 ```
 
 ### 10. Ensure .gitignore for Personal State
@@ -309,7 +320,7 @@ if ! grep -q "_bmad-output/lens-work/state.yaml" .gitignore 2>/dev/null; then
   echo "_bmad-output/lens-work/state.yaml" >> .gitignore
   git add .gitignore
   git commit -m "chore: gitignore personal lens-work state"
-  git push origin "${domain_prefix}/${initiative_id}/small-1"
+  git push origin "${domain_prefix}/${initiative_id}-small-p1"
 fi
 ```
 
@@ -361,14 +372,20 @@ Output to Compass:
 ├── Domain: ${domain}
 ├── Question mode: ${question_mode}
 ├── Docs path: ${docs_path}
-├── Size: small (stored in initiative config)
 ├── Target repos: ${target_repos}
+├──
+├── Review Audience Progression:
+│   ├── p1 (Analysis)     → small  (solo dev, 1 reviewer)
+│   ├── p2 (Planning)     → medium (small team, 2-3 reviewers)
+│   ├── p3 (Solutioning)  → large  (full team, formal gates)
+│   └── p4 (Implementation) → large  (full team, formal gates)
 ├──
 ├── Branch Topology:
 │   ├── Base: ${domain_prefix}/${initiative_id}/base
-│   ├── Small: ${domain_prefix}/${initiative_id}/small
-│   ├── Large: ${domain_prefix}/${initiative_id}/large
-│   └── Phase: ${domain_prefix}/${initiative_id}/small-1 (committed & pushed)
+│   ├── Small audience:  ${domain_prefix}/${initiative_id}-small
+│   ├── Medium audience: ${domain_prefix}/${initiative_id}-medium
+│   ├── Large audience:  ${domain_prefix}/${initiative_id}-large
+│   └── Phase: ${domain_prefix}/${initiative_id}-small-p1 (committed & pushed)
 ├──
 ├── Branch Selection:
 │   ${for target_repo in target_repos}
@@ -378,7 +395,7 @@ Output to Compass:
 ├──
 ├── State Architecture:
 │   ├── Personal state: _bmad-output/lens-work/state.yaml (git-ignored)
-│   ├── Initiative config: _bmad-output/lens-work/initiatives/${initiative_id}.yaml (committed, includes size)
+│   ├── Initiative config: _bmad-output/lens-work/initiatives/${initiative_id}.yaml (committed, includes review_audience_map)
 │   └── Profile selected_branch: _bmad-output/personal/profile.yaml (git-ignored, includes branch + commit)
 ├──
 └── Ready for /pre-plan
@@ -388,7 +405,7 @@ State loading pattern:
   initiative = load("_bmad-output/lens-work/initiatives/${state.active_initiative}.yaml")
   profile = load("_bmad-output/personal/profile.yaml")
   
-  size = initiative.size   # Always read size from shared initiative config
+  review_size = initiative.review_audience_map[state.current.phase]   # Phase determines audience
   selected_branch = profile.lens_work.selected_branch.branch  # Cached branch selection
 ```
 
@@ -401,7 +418,7 @@ The three-part state architecture:
 | File | Scope | Git Status | Contents |
 |------|-------|------------|----------|
 | `state.yaml` | Personal | git-ignored | Active initiative pointer, current phase/workflow position |
-| `initiatives/{id}.yaml` | Shared | committed | Initiative definition, **size**, gates, blocks, branches, target repos |
+| `initiatives/{id}.yaml` | Shared | committed | Initiative definition, **review_audience_map**, gates, blocks, branches, target repos |
 | `personal/profile.yaml` | Personal | git-ignored | User preferences, **branch selection + last sync timestamp** (per initiative) |
 
 **Loading pattern used by all downstream workflows:**
@@ -419,10 +436,10 @@ profile = load("_bmad-output/personal/profile.yaml")
 # Step 4: Use all three for workflow logic
 current_phase = state.current.phase
 initiative_layer = initiative.layer
-size = initiative.size           # ALWAYS read size from shared initiative config
+review_size = initiative.review_audience_map[current_phase]  # Phase determines review audience
 target_repos = initiative.target_repos
-selected_branch = profile.lens_work.selected_branch.branch  # Cached branch selection
-last_sync_date = profile.lens_work.last_sync.date          # For daily rate limit check
+selected_branch = profile.lens_work.selected_branch.branch
+last_sync_date = profile.lens_work.last_sync.date
 ```
 
 ---
@@ -444,55 +461,11 @@ last_sync_date = profile.lens_work.last_sync.date          # For daily rate limi
 ## Post-Conditions
 
 - [ ] Initiative ID generated and unique
-- [ ] All 4 branches created and pushed (via Casey)
+- [ ] All 5 branches created and pushed (via Casey: base, -small, -medium, -large, -small-p1)
 - [ ] `initiatives/{id}.yaml` created and committed
 - [ ] `state.yaml` written locally (git-ignored)
 - [ ] `.gitignore` updated for `state.yaml`
 - [ ] `event-log.jsonl` entry appended and committed
 - [ ] **Target repos synced and branches selected** (via sync-and-select-branch)
 - [ ] `profile.lens_work.selected_branch` and `last_sync.date` updated
-- [ ] Control returned to Compass for /pre-plan routing
-| `initiatives/{id}.yaml` | Shared | committed | Initiative definition, **size**, gates, blocks, branches, target repos |
-
-**Loading pattern used by all downstream workflows:**
-
-```yaml
-# Step 1: Load personal state to find active initiative
-state = load("_bmad-output/lens-work/state.yaml")
-
-# Step 2: Load initiative config using the active_initiative pointer
-initiative = load("_bmad-output/lens-work/initiatives/${state.active_initiative}.yaml")
-
-# Step 3: Use both for workflow logic
-current_phase = state.current.phase
-initiative_layer = initiative.layer
-size = initiative.size           # ALWAYS read size from shared initiative config
-target_repos = initiative.target_repos
-gates = initiative.gates
-domain_prefix = initiative.domain_prefix
-```
-
----
-
-## Error Handling
-
-| Error | Recovery |
-|-------|----------|
-| Branch already exists | Prompt: "Initiative ID collision. Regenerate?" |
-| Push failed | Check remote connectivity, retry with backoff |
-| Service map not found | Error: "service-map.yaml missing. Run bootstrap first." |
-| initiatives/ dir creation failed | Ensure _bmad-output/lens-work/ exists and is writable |
-| Casey delegation failed | Output Casey error, allow retry |
-| state.yaml already exists | Warn: "Active initiative found. Switch or archive first." |
-
----
-
-## Post-Conditions
-
-- [ ] Initiative ID generated and unique
-- [ ] All 4 branches created and pushed (via Casey)
-- [ ] `initiatives/{id}.yaml` created and committed
-- [ ] `state.yaml` written locally (git-ignored)
-- [ ] `.gitignore` updated for `state.yaml`
-- [ ] `event-log.jsonl` entry appended and committed
 - [ ] Control returned to Compass for /pre-plan routing

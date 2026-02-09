@@ -194,6 +194,10 @@ agent:
       description: "[repo-status] Fast health check for confidence scoring"
     
     # Utility Commands
+    - trigger: credentials or fuzzy match on pat or token or git credentials
+      workflow: "{project-root}/_bmad/lens-work/workflows/utility/manage-credentials/workflow.md"
+      description: "[credentials] Add, update, or test git host PATs for PR automation"
+
     - trigger: H or fuzzy match on help or menu
       action: "display_menu"
       description: "[H] Display Scout's menu"
