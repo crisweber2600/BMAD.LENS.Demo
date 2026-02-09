@@ -67,6 +67,58 @@ I'll help you fill in each section.
 
 ---
 
+## Inheritance Context Guidance
+
+**IF layer is NOT Domain:**
+
+```
+📚 **Inheritance Guidance**
+
+This constitution will inherit from parent constitution(s):
+{parent_chain}
+
+**What inheritance means:**
+- ✅ You CAN add new articles specific to this scope
+- ✅ You CAN narrow/specialize inherited rules (with compatible constraints)
+- ❌ You CANNOT contradict parent articles
+- ❌ You CANNOT remove inherited governance
+
+**Parent principles you're inheriting:**
+
+{if parents exist:}
+{for each parent constitution:}
+**From {parent_layer}/{parent_name}:**
+{for each parent article:}
+- Article {n}: {title} — {summary}
+{endfor}
+{endfor}
+
+**Recommendation:** Review parent principles from the **Principle Catalog** before
+defining articles to ensure alignment and avoid contradictions.
+
+**Access catalog:** See `_bmad/lens-work/data/governance/principle-catalog.md`
+{endif}
+
+{if no parents:}
+(No parent constitutions found — you are creating a root constitution)
+{endif}
+```
+
+**Offer catalog access:**
+```
+Would you like to review the Principle Catalog for guidance? [Y/N]
+```
+
+**IF Y:**
+- Load and display `{project-root}/_bmad/lens-work/data/governance/principle-catalog.md`
+- Highlight principles relevant to selected layer
+- Return to gather flow
+
+**IF N:**
+- Continue to preamble
+
+---
+
 ## Gather Preamble
 
 **Ask:**

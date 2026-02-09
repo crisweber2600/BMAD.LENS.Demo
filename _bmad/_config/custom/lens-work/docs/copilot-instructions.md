@@ -206,7 +206,7 @@ Command guidance and templates:
 ### Runtime State (LENS Workbench)
 - Location: `_bmad-output/lens-work/`
 - Files:
-  - `state.yaml` — Current initiative, phase, lane, gate status
+  - `state.yaml` — Current initiative, phase, size, gate status
   - `event-log.jsonl` — Append-only audit trail
 - Management: Read by Tracey (state manager), written by all workflows
 
@@ -306,18 +306,18 @@ The LENS Workbench enforces strict git-based workflow control:
 
 ### Branch Topology
 
-Branches mirror the BMAD lifecycle phases and lanes:
+Branches mirror the BMAD lifecycle phases and sizes:
 
 ```
 main
 └── {domain_prefix}/{initiative_id}/base           ← Baseline
-    ├── {domain_prefix}/{initiative_id}/small      ← Small review lane
+    ├── {domain_prefix}/{initiative_id}/small      ← Small review size
     │   ├── .../small-1                            ← Phase 1 (Analysis)
     │   │   └── .../small-1-{workflow}             ← Workflow branch
     │   ├── .../small-2
     │   ├── .../small-3
     │   └── .../small-4
-    └── {domain_prefix}/{initiative_id}/large      ← Large review lane
+    └── {domain_prefix}/{initiative_id}/large      ← Large review size
         └── .../large-{N}-{workflow}
 ```
 
@@ -332,7 +332,7 @@ All lens-work workflows enforce:
 
 Example commit message:
 ```
-{domain}/{initiative_id}/{lane}/{phase}[/{workflow}]: description of changes
+{domain}/{initiative_id}/{size}/{phase}[/{workflow}]: description of changes
 ```
 
 ## Using Copilot Effectively in BMAD Repos

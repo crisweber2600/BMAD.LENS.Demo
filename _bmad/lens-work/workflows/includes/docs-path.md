@@ -10,6 +10,42 @@ This document defines the canonical directory structure, file naming conventions
 
 ---
 
+## Docs Path Resolution Logic
+
+### Usage
+Include this in any workflow that needs to resolve initiative docs paths.
+
+### Resolution Algorithm
+
+```pseudocode
+function resolve_docs_path(initiative):
+  if initiative.docs and initiative.docs.path:
+    docs_path = initiative.docs.path
+    repo_docs_path = "docs/${initiative.docs.domain}/${initiative.docs.service}/${initiative.docs.repo}"
+  else:
+    # Legacy fallback
+    docs_path = "_bmad-output/planning-artifacts/"
+    repo_docs_path = null
+    emit_warning("⚠️ DEPRECATED: Initiative missing docs.path. Using legacy path.")
+  
+  return { docs_path, repo_docs_path }
+```
+
+### Repo Docs Allowlist
+The `repo_docs_path` enables loading context from the target repository's own docs folder.
+Valid doc types from repo: `README.md`, `CONTRIBUTING.md`, `SETUP.md`, `ARCHITECTURE.md`, `API.md`
+
+Only load repo docs if:
+1. `repo_docs_path` is resolved (not null)
+2. The file exists at the resolved path
+3. The file is in the allowlist above
+
+### Migration Note
+Initiatives created before context enhancement will not have a `docs.path` block.
+The fallback ensures backward compatibility while surfacing deprecation warnings.
+
+---
+
 ## Directory Structure
 
 ```
@@ -262,4 +298,4 @@ Resolved: _bmad-output/planning-artifacts/rate-limit-x7k2m9/p2-prd.md
 
 - **artifact-validator.md** — Validates artifacts at these paths
 - **jira-integration.md** — CSV files stored in planning-artifacts
-- **lane-topology.md** — Branch structure artifacts are committed to
+- **size-topology.md** — Branch structure artifacts are committed to

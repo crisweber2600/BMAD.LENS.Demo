@@ -11,7 +11,7 @@
 ```yaml
 agent:
   metadata:
-    id: "_bmad/lens-work/agents/tracey.agent.md"
+    id: "_bmad/lens-work/agents/tracey.agent.yaml"
     name: Tracey
     title: State & Recovery Specialist
     icon: 📊
@@ -115,7 +115,7 @@ current:
   phase_name: "Analysis"
   workflow: discovery
   workflow_status: in_progress
-  lane: small
+  size: small
   
 branches:
   base: lens/rate-limit-x7k2m9/base
@@ -139,7 +139,7 @@ telemetry:
 
 ```jsonl
 {"ts":"2026-02-03T10:30:00Z","event":"init-initiative","id":"rate-limit-x7k2m9","layer":"microservice"}
-{"ts":"2026-02-03T10:35:00Z","event":"start-phase","phase":"p1","lane":"small"}
+{"ts":"2026-02-03T10:35:00Z","event":"start-phase","phase":"p1","size":"small"}
 {"ts":"2026-02-03T10:35:01Z","event":"start-workflow","workflow":"discovery","branch":"lens/rate-limit-x7k2m9/small/p1/w/discovery"}
 ```
 
@@ -160,7 +160,7 @@ Created: 2026-02-03T10:30:00Z
 Current Position
 ├── Phase: p1 (Analysis)
 ├── Workflow: discovery (in_progress)
-├── Lane: small
+├── Size: small
 └── Branch: lens/rate-limit-x7k2m9/small/p1/w/discovery
 
 Merge Gates

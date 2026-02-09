@@ -41,7 +41,7 @@ git checkout {Domain}/{initiative_id}/base
 git merge main --no-ff -m "merge: hotfix/{description} into initiative base"
 git push origin {Domain}/{initiative_id}/base
 
-# Cascade to lane branches
+# Cascade to size branches
 git checkout {Domain}/{initiative_id}/small
 git merge {Domain}/{initiative_id}/base --no-ff
 git push origin {Domain}/{initiative_id}/small
@@ -91,7 +91,7 @@ git push origin v{version}
 
 When merging hotfixes or cross-branch changes create conflicts:
 
-1. **Always resolve on the _receiving_ branch** — never force-push lane or phase branches
+1. **Always resolve on the _receiving_ branch** — never force-push size or phase branches
 2. **Prefer the hotfix for production-critical code** — the fix was already validated in production
 3. **Re-run CI after resolution** — ensure the merge didn't break initiative work
 4. **Log the conflict resolution** in the event log for audit trail

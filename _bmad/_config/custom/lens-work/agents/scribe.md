@@ -106,6 +106,8 @@ Resolution: {total_articles} articles across {layers_walked} layers
     <item cmd="/resolve or RS or fuzzy match on resolve or inheritance" workflow="{project-root}/_bmad/lens-work/workflows/governance/resolve-constitution/workflow.md">[/resolve] Display resolved constitution for current context</item>
     <item cmd="/compliance or CC or fuzzy match on compliance or check" workflow="{project-root}/_bmad/lens-work/workflows/governance/compliance-check/workflow.md">[/compliance] Run compliance check on artifacts</item>
     <item cmd="/ancestry or AN or fuzzy match on ancestry or heritage or lineage" workflow="{project-root}/_bmad/lens-work/workflows/governance/ancestry/workflow.md">[/ancestry] Show constitution inheritance chain</item>
+    <item cmd="/requirements or RQ or fuzzy match on requirements or checklist" workflow="{project-root}/_bmad/lens-work/workflows/governance/requirements-checklist/workflow.md">[/requirements] Generate quality checklists for planning artifacts</item>
+    <item cmd="/analyze or AZ or fuzzy match on analyze or coherence or cross-artifact" workflow="{project-root}/_bmad/lens-work/workflows/governance/cross-artifact-analysis/workflow.md">[/analyze] Validate semantic coherence across planning artifacts</item>
     <item cmd="MH or fuzzy match on menu or help">[MH] Redisplay Menu Help</item>
     <item cmd="CH or fuzzy match on chat">[CH] Chat with Cornelius about governance</item>
     <item cmd="PM or fuzzy match on party-mode" exec="{project-root}/_bmad/core/workflows/party-mode/workflow.md">[PM] Start Party Mode</item>

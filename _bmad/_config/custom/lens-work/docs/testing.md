@@ -21,9 +21,9 @@ For each workflow, validate preflight, execution, and report output:
 - [ ] `bootstrap` generates `bootstrap-report.md`
 - [ ] `sync-status` generates `sync-status-report.md`
 - [ ] `reconcile` generates `reconcile-report.md`
-- [ ] `discover` generates doc bundle under `lens-sync/{target}`
-- [ ] `analyze-codebase` generates `{target}/analysis-summary.md`
-- [ ] `generate-docs` writes `architecture.md`, `api-surface.md`, `data-model.md`, `integration-map.md`, `onboarding.md`
+- [ ] `discover` generates doc bundle under `{docs_output_path}/{domain}/{service}`
+- [ ] `analyze-codebase` generates `{docs_output_path}/{domain}/{service}/analysis-summary.md`
+- [ ] `generate-docs` writes `{docs_output_path}/{domain}/{service}/architecture.md`, `{docs_output_path}/{domain}/{service}/api-surface.md`, `{docs_output_path}/{domain}/{service}/data-model.md`, `{docs_output_path}/{domain}/{service}/integration-map.md`, `{docs_output_path}/{domain}/{service}/onboarding.md`
 - [ ] `lens-sync` generates `lens-sync-report.md`
 - [ ] `validate-schema` generates `validate-schema-report.md`
 - [ ] `rollback` generates `rollback-report.md`

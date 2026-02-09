@@ -19,7 +19,7 @@ This section provides practical examples for using LENS Sync & Discovery.
 ### Legacy Microservice Documentation
 
 1. `Scout, discover`
-2. Review generated docs in `{docs_output_folder}/lens-sync/...`
+2. Review generated docs in `{docs_output_path}/{domain}/{service}/...`
 3. `Link, lens-sync`
 
 **Result:** Architecture, API, and data model documentation produced in under an hour.
@@ -43,7 +43,7 @@ This section provides practical examples for using LENS Sync & Discovery.
 1. `Bridge, bootstrap`
 2. Approve the sync plan
 
-**Expected Output:** `{docs_output_folder}/lens-sync/bootstrap-report.md`
+**Expected Output:** `{docs_output_path}/lens-sync/bootstrap-report.md`
 
 ---
 
@@ -52,7 +52,7 @@ This section provides practical examples for using LENS Sync & Discovery.
 1. `Bridge, sync-status`
 2. Review drift findings
 
-**Expected Output:** `{docs_output_folder}/lens-sync/sync-status-report.md`
+**Expected Output:** `{docs_output_path}/lens-sync/sync-status-report.md`
 
 ---
 
@@ -62,7 +62,7 @@ This section provides practical examples for using LENS Sync & Discovery.
 2. Run `Bridge, reconcile`
 3. Select and apply resolutions
 
-**Expected Output:** `{docs_output_folder}/lens-sync/reconcile-report.md`
+**Expected Output:** `{docs_output_path}/lens-sync/reconcile-report.md`
 
 ---
 
@@ -72,7 +72,7 @@ This section provides practical examples for using LENS Sync & Discovery.
 2. Select target service
 
 **Expected Output:**
-`{docs_output_folder}/lens-sync/{target}/architecture.md` and related docs.
+`{docs_output_path}/{domain}/{service}/architecture.md` and related docs.
 
 ---
 
@@ -81,7 +81,7 @@ This section provides practical examples for using LENS Sync & Discovery.
 1. `Scout, analyze-codebase`
 2. Select target service
 
-**Expected Output:** `{docs_output_folder}/lens-sync/{target}/analysis-summary.md`
+**Expected Output:** `{docs_output_path}/{domain}/{service}/analysis-summary.md`
 
 ---
 
@@ -91,7 +91,7 @@ This section provides practical examples for using LENS Sync & Discovery.
 2. Run `Scout, generate-docs`
 
 **Expected Output:**
-`{docs_output_folder}/lens-sync/{target}/architecture.md`, `api-surface.md`, `data-model.md`, `integration-map.md`, `onboarding.md`
+`{docs_output_path}/{domain}/{service}/architecture.md`, `api-surface.md`, `data-model.md`, `integration-map.md`, `onboarding.md`
 
 ---
 

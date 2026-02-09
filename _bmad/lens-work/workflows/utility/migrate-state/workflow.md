@@ -105,8 +105,8 @@ migration_data:
   domain: ${old_state.initiative.domain || null}
   service: ${old_state.initiative.service || null}
 
-  # Size now lives in shared initiative config (reads legacy "lane" field from old state)
-  size: ${old_state.current.lane || old_state.initiative.lane || "small"}
+  # Size now lives in shared initiative config (reads legacy "size" field from old state)
+  size: ${old_state.current.size || old_state.initiative.size || "small"}
   
   # Gates and blocks from old state
   gates: ${old_state.gates || []}

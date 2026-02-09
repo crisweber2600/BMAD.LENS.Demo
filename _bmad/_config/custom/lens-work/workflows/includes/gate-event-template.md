@@ -15,7 +15,7 @@ This document defines all gate types, event log formats, and validation rules us
 | Gate Type | Purpose | Trigger | Automation |
 |-----------|---------|---------|------------|
 | `phase-gate` | Validates phase completion before next phase starts | Phase transition | Auto (ancestry check) |
-| `review-gate` | Large-lane review of planning artifacts | PR: small → large | Manual (PR approval) |
+| `review-gate` | Large-size review of planning artifacts | PR: small → large | Manual (PR approval) |
 | `merge-gate` | Validates workflow merged before next workflow starts | Workflow transition | Auto (ancestry check) |
 | `deploy-gate` | Validates implementation ready for deployment | Post-P4 completion | Manual (checklist) |
 
@@ -128,7 +128,7 @@ Logged when a gate is manually skipped.
 #### start-phase
 
 ```json
-{"ts":"${ISO_TIMESTAMP}","event":"start-phase","phase":"p${phase_number}","phase_name":"${phase_name}","lane":"${lane}","initiative":"${initiative_id}"}
+{"ts":"${ISO_TIMESTAMP}","event":"start-phase","phase":"p${phase_number}","phase_name":"${phase_name}","size":"${size}","initiative":"${initiative_id}"}
 ```
 
 #### finish-phase
@@ -140,7 +140,7 @@ Logged when a gate is manually skipped.
 #### start-workflow
 
 ```json
-{"ts":"${ISO_TIMESTAMP}","event":"start-workflow","workflow":"${workflow_name}","phase":"${phase}","lane":"${lane}","initiative":"${initiative_id}"}
+{"ts":"${ISO_TIMESTAMP}","event":"start-workflow","workflow":"${workflow_name}","phase":"${phase}","size":"${size}","initiative":"${initiative_id}"}
 ```
 
 #### finish-workflow
@@ -161,9 +161,9 @@ Validates that a phase is complete before the next phase can begin.
 gate: phase-gate
 validation:
   - check: ancestry
-    command: "git merge-base --is-ancestor origin/${phase_branch} origin/${lane_branch}"
+    command: "git merge-base --is-ancestor origin/${phase_branch} origin/${size_branch}"
     pass_if: exit_code == 0
-    fail_message: "Phase ${phase} not merged into lane. Complete all workflows and merge PR."
+    fail_message: "Phase ${phase} not merged into size. Complete all workflows and merge PR."
 
   - check: artifacts
     rule: "All required artifacts for phase exist and are non-empty"
@@ -325,6 +325,6 @@ gates:
 
 ## Related Includes
 
-- **lane-topology.md** — Branch structure that gates protect
+- **size-topology.md** — Branch structure that gates protect
 - **artifact-validator.md** — Artifact checks invoked by phase gates
 - **pr-links.md** — PR URL generation for gate PRs

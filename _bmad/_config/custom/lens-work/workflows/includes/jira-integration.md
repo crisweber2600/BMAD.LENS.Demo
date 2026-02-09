@@ -329,3 +329,32 @@ integrations:
 - **artifact-validator.md** — Validates story artifacts before phase gates
 - **gate-event-template.md** — Gate events triggered by story completion
 - **docs-path.md** — Canonical paths for story and epic files
+
+---
+
+## Context Enhancement Compatibility
+
+JIRA integration uses initiative metadata from config, not from planning artifact paths.
+No path changes required for JIRA sync. The initiative config's `docs.path` field is
+available for JIRA ticket descriptions if link-back to artifacts is desired.
+
+### Using docs.path in JIRA Descriptions
+
+When creating JIRA tickets, the `docs.path` from initiative config can be included
+in ticket descriptions to link back to the source planning artifacts:
+
+```yaml
+# Example: Including docs.path in JIRA ticket description
+description: |
+  Planning artifacts: ${initiative.docs.path}/
+  Architecture: ${initiative.docs.path}/architecture.md
+  Stories: ${initiative.docs.path}/stories.md
+```
+
+### CSV Tracker Path Compatibility
+
+The CSV story tracker location follows the same path resolution as other artifacts:
+- **New**: `${docs_path}/stories.csv` and `${docs_path}/epics.csv`
+- **Legacy**: `_bmad-output/planning-artifacts/{initiative_id}/stories.csv`
+
+Both locations are supported. The artifact validator handles path resolution transparently.

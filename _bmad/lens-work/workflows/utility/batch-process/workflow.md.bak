@@ -243,7 +243,7 @@ params:
     - "${output_root}"
     - "${docs_root}/"
   message: "[lens-work] batch: Phase ${phase_number} ${phase_name} — ${initiative.id}"
-  branch: "${initiative.domain_prefix}/${initiative.id}/${initiative.lane}-${phase_number}"
+  branch: "${initiative.domain_prefix}/${initiative.id}/${initiative.size}-${phase_number}"
 ```
 
 ### 8. Log Event

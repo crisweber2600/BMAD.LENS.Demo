@@ -24,11 +24,11 @@ Generate and display the compliance report.
 
 ## Verdict Banner
 
-**IF PASS:**
+**IF COMPLIANT:**
 ```
 ✅ **VERDICT: COMPLIANT**
 
-All {article_count} articles satisfied.
+All {article_count} articles satisfied ({mandatory_count} mandatory, {advisory_count} advisory).
 This artifact is cleared for implementation.
 ```
 
@@ -36,15 +36,15 @@ This artifact is cleared for implementation.
 ```
 ⚠️ **VERDICT: CONDITIONAL PASS**
 
-{satisfied_count} satisfied, {not_verified_count} not verified, 0 violations.
+{pass_count} PASS, {warn_count} WARN (includes {advisory_warn_count} advisory), 0 mandatory violations.
 Review unverified items before proceeding.
 ```
 
-**IF FAIL:**
+**IF NON-COMPLIANT:**
 ```
 ❌ **VERDICT: NON-COMPLIANT**
 
-{violated_count} violation(s) detected.
+{fail_count} mandatory violation(s) detected.
 This artifact requires remediation before implementation.
 ```
 
@@ -59,18 +59,20 @@ This artifact requires remediation before implementation.
 
 {for each article:}
 
-{status_icon} **Article {id}: {title}** — {status}
+{status_icon} **Article {id}: {title}** — {PASS|WARN|FAIL} [{MANDATORY|ADVISORY}]
 
-{if satisfied:}
+{if PASS:}
    **Evidence:** {evidence_quote}
    **Location:** {location}
 
-{if not_verified:}
+{if WARN:}
+   **Enforcement:** {MANDATORY|ADVISORY}
    **Expected:** {expected_evidence}
    **Found:** No mention of {topic}
    **Recommendation:** Add section addressing {requirement}
 
-{if violated:}
+{if FAIL:}
+   **Enforcement:** MANDATORY
    **Issue:** {violation_description}
    **Location:** {location}
    **Required Action:** {remediation}
@@ -86,16 +88,16 @@ This artifact requires remediation before implementation.
 ## Compliance by Source
 
 **Domain Constitution ({domain_name}):**
-- ✅ {satisfied}/{total} articles satisfied
-- ⚠️ {not_verified} not verified
-- ❌ {violated} violations
+- ✅ {pass_count}/{total} PASS
+- ⚠️ {warn_count} WARN ({advisory_warn_count} advisory)
+- ❌ {fail_count} FAIL (mandatory only)
 
 **Service Constitution ({service_name}):**
-- ✅ {satisfied}/{total} articles satisfied
+- ✅ {pass_count}/{total} PASS
 - ...
 
 **Local Constitution ({local_name}):**
-- ✅ {satisfied}/{total} articles satisfied
+- ✅ {pass_count}/{total} PASS
 - ...
 ```
 
@@ -103,26 +105,26 @@ This artifact requires remediation before implementation.
 
 ## Recommendations
 
-**IF not_verified > 0:**
+**IF warn_count > 0:**
 ```
 ## Recommendations
 
 The following items were not explicitly addressed in the artifact:
 
-{for each not_verified:}
-{n}. **{article_title}**
+{for each WARN:}
+{n}. **{article_title}** [{MANDATORY|ADVISORY}]
    - Add: {suggested_content}
    - Section: {suggested_location}
 ```
 
-**IF violated > 0:**
+**IF fail_count > 0:**
 ```
 ## Required Remediations
 
-The following violations must be resolved:
+The following mandatory violations must be resolved:
 
-{for each violated:}
-{n}. **{article_title}**
+{for each FAIL:}
+{n}. **{article_title}** [MANDATORY]
    - Issue: {issue}
    - Fix: {remediation}
    - Priority: {High | Medium}
@@ -170,8 +172,8 @@ Log `compliance-evaluated` through Tracey with:
 Compliance check complete.
 
 What's next?
-{if violations:}
-- Fix violations and re-check -> /compliance
+{if fail_count > 0:}
+- Fix mandatory violations and re-check -> /compliance
 {endif}
 - View full constitution -> /resolve
 - Return to menu -> H

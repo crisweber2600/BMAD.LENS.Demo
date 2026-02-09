@@ -259,9 +259,9 @@ current:
   workflow_status: pending
 ```
 
-> **Note:** This file is git-ignored. It tracks the individual user's current position in the initiative. Each collaborator has their own local copy. Lane is NOT stored here — read from initiative config instead.
+> **Note:** This file is git-ignored. It tracks the individual user's current position in the initiative. Each collaborator has their own local copy. Size is NOT stored here — read from initiative config instead.
 
-### 7. Log Event
+### 8. Log Event
 
 Append to `{project-root}/_bmad-output/lens-work/event-log.jsonl`:
 
@@ -269,7 +269,7 @@ Append to `{project-root}/_bmad-output/lens-work/event-log.jsonl`:
 {"ts":"${ISO_TIMESTAMP}","event":"init-initiative","id":"${initiative_id}","layer":"${layer}","target_repos":${JSON.stringify(target_repos)},"domain":"${domain}","service":"${service}","question_mode":"${question_mode}","docs_path":"${docs_path}"}
 ```
 
-### 8. Commit Initiative Config
+### 9. Commit Initiative Config
 
 ```bash
 # Ensure on small-1 branch (phase 1)
@@ -285,7 +285,7 @@ git commit -m "init(${initiative_id}): Create ${layer} initiative '${initiative_
 Initiative: ${initiative_id}
 Layer: ${layer}
 Domain: ${domain}
-Lane: small
+Size: small
 Target repos: ${target_repos}
 
 Creates:
@@ -301,7 +301,7 @@ Ready for /pre-plan workflow."
 git push -u origin "${domain_prefix}/${initiative_id}/small-1"
 ```
 
-### 9. Ensure .gitignore for Personal State
+### 10. Ensure .gitignore for Personal State
 
 ```bash
 # Ensure state.yaml is git-ignored (personal state should not be committed)
@@ -313,7 +313,44 @@ if ! grep -q "_bmad-output/lens-work/state.yaml" .gitignore 2>/dev/null; then
 fi
 ```
 
-### 10. Return Control to Compass
+### 10.5. Run Daily Branch Sync and Selection
+
+Once initiative is configured, run the sync workflow to select target branch for each target repo:
+
+```bash
+# For each target repo (usually 1-3 repos)
+for target_repo in ${target_repos[@]}; do
+  output: |
+    🔄 Setting up target repo: ${target_repo}
+    
+  # Invoke sync-and-select-branch workflow with force_sync=true
+  # (Always sync on first initiative creation, even if profile was synced today)
+  invoke_workflow:
+    path: "{project-root}/_bmad/lens-work/workflows/utility/sync-and-select-branch/workflow.md"
+    params:
+      initiative_id: ${initiative_id}
+      target_repo: ${target_repo}
+      force_sync: true    # New initiatives always sync branches
+    capture_result: branch_selection_result
+  
+  # branch_selection_result contains:
+  # - branch: selected branch name
+  # - commit_hash: commit SHA
+  # - commit_date: ISO date
+  # - cached: false (always fresh on new initiative)
+  # - timestamp: sync timestamp
+  
+  output: |
+    ✅ ${target_repo}: ${branch_selection_result.branch}
+    └── Last commit: ${branch_selection_result.commit_date}
+  
+done
+
+# At this point, all target repos have checked out their selected branches
+# and profile.lens_work.selected_branch is populated for this initiative
+```
+
+### 11. Return Control to Compass
 
 Output to Compass:
 
@@ -324,7 +361,7 @@ Output to Compass:
 ├── Domain: ${domain}
 ├── Question mode: ${question_mode}
 ├── Docs path: ${docs_path}
-├── Lane: small (stored in initiative config)
+├── Size: small (stored in initiative config)
 ├── Target repos: ${target_repos}
 ├──
 ├── Branch Topology:
@@ -333,27 +370,88 @@ Output to Compass:
 │   ├── Large: ${domain_prefix}/${initiative_id}/large
 │   └── Phase: ${domain_prefix}/${initiative_id}/small-1 (committed & pushed)
 ├──
+├── Branch Selection:
+│   ${for target_repo in target_repos}
+│   ├── ${target_repo}: ${branch_selection_result[target_repo].branch}
+│   │  └── Synced: ${branch_selection_result[target_repo].timestamp}
+│   ${endfor}
+├──
 ├── State Architecture:
 │   ├── Personal state: _bmad-output/lens-work/state.yaml (git-ignored)
-│   └── Initiative config: _bmad-output/lens-work/initiatives/${initiative_id}.yaml (committed, includes size)
+│   ├── Initiative config: _bmad-output/lens-work/initiatives/${initiative_id}.yaml (committed, includes size)
+│   └── Profile selected_branch: _bmad-output/personal/profile.yaml (git-ignored, includes branch + commit)
 ├──
 └── Ready for /pre-plan
 
 State loading pattern:
   state = load("_bmad-output/lens-work/state.yaml")
   initiative = load("_bmad-output/lens-work/initiatives/${state.active_initiative}.yaml")
-  size = initiative.size   # Always read size from initiative config
+  profile = load("_bmad-output/personal/profile.yaml")
+  
+  size = initiative.size   # Always read size from shared initiative config
+  selected_branch = profile.lens_work.selected_branch.branch  # Cached branch selection
 ```
 
 ---
 
 ## State Architecture Reference
 
-The two-file state architecture separates concerns:
+The three-part state architecture:
 
 | File | Scope | Git Status | Contents |
 |------|-------|------------|----------|
 | `state.yaml` | Personal | git-ignored | Active initiative pointer, current phase/workflow position |
+| `initiatives/{id}.yaml` | Shared | committed | Initiative definition, **size**, gates, blocks, branches, target repos |
+| `personal/profile.yaml` | Personal | git-ignored | User preferences, **branch selection + last sync timestamp** (per initiative) |
+
+**Loading pattern used by all downstream workflows:**
+
+```yaml
+# Step 1: Load personal state to find active initiative
+state = load("_bmad-output/lens-work/state.yaml")
+
+# Step 2: Load initiative config using the active_initiative pointer
+initiative = load("_bmad-output/lens-work/initiatives/${state.active_initiative}.yaml")
+
+# Step 3: Load personal profile for branch selection and user preferences
+profile = load("_bmad-output/personal/profile.yaml")
+
+# Step 4: Use all three for workflow logic
+current_phase = state.current.phase
+initiative_layer = initiative.layer
+size = initiative.size           # ALWAYS read size from shared initiative config
+target_repos = initiative.target_repos
+selected_branch = profile.lens_work.selected_branch.branch  # Cached branch selection
+last_sync_date = profile.lens_work.last_sync.date          # For daily rate limit check
+```
+
+---
+
+## Error Handling
+
+| Error | Recovery |
+|-------|----------|
+| Branch already exists | Prompt: "Initiative ID collision. Regenerate?" |
+| Push failed | Check remote connectivity, retry with backoff |
+| Service map not found | Error: "service-map.yaml missing. Run bootstrap first." |
+| initiatives/ dir creation failed | Ensure _bmad-output/lens-work/ exists and is writable |
+| Casey delegation failed | Output Casey error, allow retry |
+| state.yaml already exists | Warn: "Active initiative found. Switch or archive first." |
+| Sync-and-select-branch workflow failed | Retry manually with `/sync-now` after resolving connectivity |
+
+---
+
+## Post-Conditions
+
+- [ ] Initiative ID generated and unique
+- [ ] All 4 branches created and pushed (via Casey)
+- [ ] `initiatives/{id}.yaml` created and committed
+- [ ] `state.yaml` written locally (git-ignored)
+- [ ] `.gitignore` updated for `state.yaml`
+- [ ] `event-log.jsonl` entry appended and committed
+- [ ] **Target repos synced and branches selected** (via sync-and-select-branch)
+- [ ] `profile.lens_work.selected_branch` and `last_sync.date` updated
+- [ ] Control returned to Compass for /pre-plan routing
 | `initiatives/{id}.yaml` | Shared | committed | Initiative definition, **size**, gates, blocks, branches, target repos |
 
 **Loading pattern used by all downstream workflows:**

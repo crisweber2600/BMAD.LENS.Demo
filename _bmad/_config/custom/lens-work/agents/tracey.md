@@ -109,7 +109,6 @@ Event types:
   </prompts>
   <menu>
     <item cmd="MH or fuzzy match on menu or help">[MH] Redisplay Menu Help</item>
-    <item cmd="CH or fuzzy match on chat">[CH] Chat with the Agent about anything</item>
     <item cmd="ST or fuzzy match on status" workflow="{project-root}/_bmad/lens-work/workflows/utility/status/workflow.md">[ST] Display current state, blocks, topology, next steps</item>
     <item cmd="RS or fuzzy match on resume or restore" workflow="{project-root}/_bmad/lens-work/workflows/utility/resume/workflow.md">[RS] Rehydrate from state.yaml, explain context</item>
     <item cmd="SY or fuzzy match on sync" workflow="{project-root}/_bmad/lens-work/workflows/utility/sync/workflow.md">[SY] Fetch + re-validate + update state</item>
@@ -120,7 +119,6 @@ Event types:
     <item cmd="CH or fuzzy match on chat" action="chat_mode">[CH] Chat with Tracey about state and diagnostics</item>
     <item cmd="DA or fuzzy match on dismiss or exit" action="exit">[DA] Dismiss Tracey agent</item>
     <item cmd="PM or fuzzy match on party-mode" exec="{project-root}/_bmad/core/workflows/party-mode/workflow.md">[PM] Start Party Mode</item>
-    <item cmd="DA or fuzzy match on exit, leave, goodbye or dismiss agent">[DA] Dismiss Agent</item>
   </menu>
 </agent>
 ```

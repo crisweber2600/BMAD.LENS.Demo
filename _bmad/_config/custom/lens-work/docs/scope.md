@@ -53,7 +53,7 @@ This document defines what the lens-sync extension **does**, **does not** do, an
 
 **Scout**
 - [ ] Produces `analysis-summary.md` per target.
-- [ ] Produces documentation artifacts in `{docs_output_folder}/lens-sync/{target}/`.
+- [ ] Produces documentation artifacts in `{docs_output_path}/{domain}/{service}/`.
 - [ ] Tracks discovery status and confidence signals in outputs.
 
 **Link**

@@ -74,7 +74,7 @@ The control repo's `state.yaml` tracks position across all repos:
 
 ```yaml
 active_initiative: bmad-9d7732
-# Lane is stored in initiatives/{id}.yaml
+# Size is stored in initiatives/{id}.yaml
 current:
   phase: p4
   workflow: dev-story

@@ -323,7 +323,7 @@ main
 **Naming rules:**
 - `{domain}` = domain prefix from initiative config (e.g., `chat`)
 - `{id}` = initiative ID (e.g., `chat-spark-backend-alignment-50cf37`)
-- `small` / `large` = size branches (NOT `lane` / `lead`)
+- `small` / `large` = size branches (old naming `lane` / `lead` is obsolete)
 - `small-{N}` = phase branches (e.g., `small-1`, `small-2`)
 
 ---

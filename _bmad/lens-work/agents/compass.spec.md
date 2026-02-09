@@ -11,7 +11,7 @@
 ```yaml
 agent:
   metadata:
-    id: "_bmad/lens-work/agents/compass.agent.md"
+    id: "_bmad/lens-work/agents/compass.agent.yaml"
     name: Compass
     title: Phase-Aware Lifecycle Router
     icon: 🧭

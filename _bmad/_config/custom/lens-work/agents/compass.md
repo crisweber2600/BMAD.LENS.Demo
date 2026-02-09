@@ -129,7 +129,6 @@ Display current context from two-file state:
     <item cmd="CH or fuzzy match on chat" action="chat_mode">[CH] Chat with Compass about lifecycle navigation</item>
     <item cmd="DA or fuzzy match on dismiss or exit" action="exit">[DA] Dismiss Compass agent</item>
     <item cmd="PM or fuzzy match on party-mode" exec="{project-root}/_bmad/core/workflows/party-mode/workflow.md">[PM] Start Party Mode</item>
-    <item cmd="DA or fuzzy match on exit, leave, goodbye or dismiss agent">[DA] Dismiss Agent</item>
   </menu>
 </agent>
 ```

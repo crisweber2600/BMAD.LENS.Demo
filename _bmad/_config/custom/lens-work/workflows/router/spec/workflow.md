@@ -45,6 +45,33 @@ initiative = load("_bmad-output/lens-work/initiatives/${state.active_initiative}
 size = initiative.size
 domain_prefix = initiative.domain_prefix
 
+# === Path Resolver (S01-S06: Context Enhancement) ===
+docs_path = initiative.docs.path    # e.g., "docs/BMAD/LENS/BMAD.Lens/context-enhancement-9bfe4e"
+repo_docs_path = "docs/${initiative.docs.domain}/${initiative.docs.service}/${initiative.docs.repo}"
+
+if docs_path == null or docs_path == "":
+  # Fallback for older initiatives without docs block
+  docs_path = "_bmad-output/planning-artifacts/"
+  repo_docs_path = null
+  warning: "⚠️ DEPRECATED: Initiative missing docs.path configuration."
+  warning: "  → Run: /compass migrate <initiative-id> to add docs.path"
+  warning: "  → This fallback will be removed in a future version."
+
+output_path = docs_path
+ensure_directory(output_path)
+
+# === Context Loader (S08: Context Enhancement) ===
+product_brief = load_file("${docs_path}/product-brief.md")
+if product_brief == null:
+  FAIL("Product brief not found at ${docs_path}/product-brief.md")
+
+if repo_docs_path != null:
+  repo_readme = load_if_exists("${repo_docs_path}/README.md")
+  repo_architecture = load_if_exists("${repo_docs_path}/ARCHITECTURE.md")
+  repo_context = { readme: repo_readme, architecture: repo_architecture }
+else:
+  repo_context = null
+
 # Validate we're on the correct branch (or can switch)
 # Branch pattern: {Domain}/{InitiativeId}/{size}-{phaseNumber}
 expected_branch: "${domain_prefix}/${initiative.id}/${size}-2"
@@ -76,11 +103,33 @@ if not phase_complete("p1"):
 
 # Verify P1 artifacts exist
 required_artifacts:
-  - "_bmad-output/planning-artifacts/product-brief.md"
+  - "${docs_path}/product-brief.md"
 
 for artifact in required_artifacts:
   if not file_exists(artifact):
-    warning: "Required artifact not found: ${artifact}. Proceeding but spec quality may suffer."
+    # Fallback: check legacy path for backward compatibility
+    legacy_path = artifact.replace("${docs_path}/", "_bmad-output/planning-artifacts/")
+    if file_exists(legacy_path):
+      warning: "Found artifact at legacy path: ${legacy_path}. Consider migrating."
+    else:
+      warning: "Required artifact not found: ${artifact}. Proceeding but spec quality may suffer."
+```
+
+### 1a. Constitution Compliance Gate (ADVISORY)
+
+```yaml
+# Invoke compliance-check to verify inherited constitution constraints
+# Mode: ADVISORY (log warnings, do not block)
+invoke: lens-work.compliance-check
+params:
+  phase: "p2"
+  phase_name: "Planning"
+  initiative_id: ${initiative.id}
+  target_repos: ${initiative.target_repos}
+  mode: "ADVISORY"
+
+# Compliance check logs findings to _bmad-output/lens-work/compliance-reports/
+# Warnings are surfaced to user but do not block workflow progression
 ```
 
 ### 2. Start Phase 2 — Auto-Branch Creation
@@ -159,8 +208,8 @@ params:
 
 invoke: bmm.create-prd
 params:
-  product_brief: "_bmad-output/planning-artifacts/product-brief.md"
-  output_path: "_bmad-output/planning-artifacts/"
+  product_brief: "${docs_path}/product-brief.md"
+  output_path: "${docs_path}/"
   constitutional_context: ${constitutional_context}
 
 invoke: casey.finish-workflow
@@ -188,9 +237,9 @@ params:
 # Reference architecture workflow from BMM module
 invoke: bmm.create-architecture
 params:
-  prd: "_bmad-output/planning-artifacts/prd.md"
-  product_brief: "_bmad-output/planning-artifacts/product-brief.md"
-  output_path: "_bmad-output/planning-artifacts/"
+  prd: "${docs_path}/prd.md"
+  product_brief: "${docs_path}/product-brief.md"
+  output_path: "${docs_path}/"
   constitutional_context: ${constitutional_context}
 
 invoke: casey.finish-workflow
@@ -248,7 +297,7 @@ params:
     - "_bmad-output/lens-work/state.yaml"
     - "_bmad-output/lens-work/initiatives/${initiative.id}.yaml"
     - "_bmad-output/lens-work/event-log.jsonl"
-    - "_bmad-output/planning-artifacts/"
+    - "${docs_path}/"
   message: "[lens-work] /spec: Phase 2 Planning — ${initiative.id}"
   branch: "${domain_prefix}/${initiative.id}/${size}-2"
 ```
@@ -265,9 +314,9 @@ params:
 
 | Artifact | Location |
 |----------|----------|
-| PRD | `_bmad-output/planning-artifacts/prd.md` |
-| UX Design | `_bmad-output/planning-artifacts/ux-design.md` |
-| Architecture | `_bmad-output/planning-artifacts/architecture.md` |
+| PRD | `${docs_path}/prd.md` |
+| UX Design | `${docs_path}/ux-design.md` |
+| Architecture | `${docs_path}/architecture.md` |
 | Initiative State | `_bmad-output/lens-work/initiatives/${id}.yaml` |
 
 ---
@@ -293,6 +342,6 @@ params:
 - [ ] state.yaml updated with phase p2
 - [ ] initiatives/{id}.yaml updated with p2 status and p1 gate passed
 - [ ] event-log.jsonl entry appended
-- [ ] Planning artifacts written (PRD, architecture; optionally UX)
+- [ ] Planning artifacts written to `${docs_path}/` (PRD, architecture; optionally UX)
 - [ ] Large Review PR opened (small → large)
 - [ ] All changes pushed to origin

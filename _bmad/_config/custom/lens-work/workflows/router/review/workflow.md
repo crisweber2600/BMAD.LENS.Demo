@@ -52,6 +52,21 @@ initiative = load("_bmad-output/lens-work/initiatives/${state.active_initiative}
 size = initiative.size
 domain_prefix = initiative.domain_prefix
 
+# === Path Resolver (S01-S06: Context Enhancement) ===
+docs_path = initiative.docs.path    # e.g., "docs/BMAD/LENS/BMAD.Lens/context-enhancement-9bfe4e"
+repo_docs_path = "docs/${initiative.docs.domain}/${initiative.docs.service}/${initiative.docs.repo}"
+
+if docs_path == null or docs_path == "":
+  # Fallback for older initiatives without docs block
+  docs_path = "_bmad-output/planning-artifacts/"
+  repo_docs_path = null
+  warning: "⚠️ DEPRECATED: Initiative missing docs.path configuration."
+  warning: "  → Run: /compass migrate <initiative-id> to add docs.path"
+  warning: "  → This fallback will be removed in a future version."
+
+output_path = "${docs_path}/reviews/"
+ensure_directory("${docs_path}/reviews/")
+
 # Validate we're on the correct branch
 # /review operates on the current phase branch (typically small-3 or base)
 current_branch = casey.get-current-branch()
@@ -82,22 +97,22 @@ if not final_pbr_merged():
 ```yaml
 # Verify all required artifacts exist for current phase
 required_artifacts:
-  - path: "_bmad-output/planning-artifacts/product-brief.md"
+  - path: "${docs_path}/product-brief.md"
     phase: "p1"
     name: "Product Brief"
-  - path: "_bmad-output/planning-artifacts/prd.md"
+  - path: "${docs_path}/prd.md"
     phase: "p2"
     name: "PRD"
-  - path: "_bmad-output/planning-artifacts/architecture.md"
+  - path: "${docs_path}/architecture.md"
     phase: "p2"
     name: "Architecture"
-  - path: "_bmad-output/planning-artifacts/epics.md"
+  - path: "${docs_path}/epics.md"
     phase: "p3"
     name: "Epics"
-  - path: "_bmad-output/planning-artifacts/stories.md"
+  - path: "${docs_path}/stories.md"
     phase: "p3"
     name: "Stories"
-  - path: "_bmad-output/planning-artifacts/readiness-checklist.md"
+  - path: "${docs_path}/readiness-checklist.md"
     phase: "p3"
     name: "Readiness Checklist"
 
@@ -200,7 +215,7 @@ if compliance_failures.length > 0:
 ```yaml
 invoke: bmm.sprint-planning
 params:
-  stories: "_bmad-output/planning-artifacts/stories.md"
+  stories: "${docs_path}/stories.md"
   constitutional_context: ${constitutional_context}
   
 output: |
@@ -311,7 +326,7 @@ params:
     - "_bmad-output/lens-work/initiatives/${initiative.id}.yaml"
     - "_bmad-output/lens-work/event-log.jsonl"
     - "_bmad-output/implementation-artifacts/"
-    - "_bmad-output/planning-artifacts/"
+    - "${docs_path}/"
   message: "[lens-work] /review: Implementation Gate ${gate_status} — ${initiative.id}"
   branch: ${current_branch}
 ```
@@ -343,7 +358,7 @@ Hand off to developer? [Y]es / [N]o
 | Artifact | Location |
 |----------|----------|
 | Dev Story | `_bmad-output/implementation-artifacts/dev-story-${id}.md` |
-| Sprint Backlog | `_bmad-output/planning-artifacts/sprint-backlog.md` |
+| Sprint Backlog | `${docs_path}/sprint-backlog.md` |
 | Initiative State | `_bmad-output/lens-work/initiatives/${id}.yaml` |
 | Event Log | `_bmad-output/lens-work/event-log.jsonl` |
 
@@ -367,7 +382,7 @@ Hand off to developer? [Y]es / [N]o
 ## Post-Conditions
 
 - [ ] Working directory clean (all changes committed)
-- [ ] All required artifacts verified (or warnings acknowledged)
+- [ ] All required artifacts verified at `${docs_path}/` (or warnings acknowledged)
 - [ ] Readiness checklist passed (zero blockers)
 - [ ] Dev story created in implementation-artifacts/
 - [ ] Gate status recorded in initiatives/{id}.yaml

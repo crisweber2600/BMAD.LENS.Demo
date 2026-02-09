@@ -26,6 +26,27 @@ if user_role not in ["PO", "Architect", "Tech Lead"]:
 
 ---
 
+## User Interaction Keywords
+
+This workflow supports special keywords to control prompting behavior:
+
+- **"defaults" / "best defaults"** → Apply defaults to **CURRENT STEP ONLY**; resume normal prompting for subsequent steps
+- **"yolo" / "keep rolling"** → Apply defaults to **ENTIRE REMAINING WORKFLOW**; auto-complete all steps
+- **"all questions" / "batch questions"** → Present **ALL QUESTIONS UPFRONT** → wait for batch answers → follow-up questions → adversarial review → final questions → generate artifacts
+- **"skip"** → Jump to a named optional step (e.g., "skip to product brief")
+- **"pause"** → Halt workflow, save progress, resume later
+- **"back"** → Roll back to previous step, re-answer questions
+
+Full documentation: [User Interaction Keywords](../../docs/user-interaction-keywords.md)
+
+**Critical Rule:** 
+- "defaults" applies only to the current question/step
+- "yolo" applies to all remaining steps in the workflow
+- "all questions" presents comprehensive questionnaire, then iteratively refines with follow-ups and party mode review
+- Other workflows and phases are unaffected
+
+---
+
 ## Prerequisites
 
 - [x] Initiative created via `#new-*` command
@@ -50,6 +71,31 @@ initiative = load("_bmad-output/lens-work/initiatives/${state.active_initiative}
 # Read size from initiative config (shared, canonical)
 size = initiative.size
 domain_prefix = initiative.domain_prefix
+
+# === Path Resolver (S01-S06: Context Enhancement) ===
+docs_path = initiative.docs.path    # e.g., "docs/BMAD/LENS/BMAD.Lens/context-enhancement-9bfe4e"
+repo_docs_path = "docs/${initiative.docs.domain}/${initiative.docs.service}/${initiative.docs.repo}"
+
+if docs_path == null or docs_path == "":
+  # Fallback for older initiatives without docs block
+  docs_path = "_bmad-output/planning-artifacts/"
+  repo_docs_path = null
+  warning: "⚠️ DEPRECATED: Initiative missing docs.path configuration."
+  warning: "  → Run: /compass migrate <initiative-id> to add docs.path"
+  warning: "  → This fallback will be removed in a future version."
+
+output_path = docs_path
+ensure_directory(output_path)
+
+# === Context Loader (S08: Context Enhancement) ===
+# Pre-plan has no prior artifacts to load — this is the first phase
+# repo_docs_path provides optional context from target repo
+if repo_docs_path != null:
+  repo_readme = load_if_exists("${repo_docs_path}/README.md")
+  repo_contributing = load_if_exists("${repo_docs_path}/CONTRIBUTING.md")
+  repo_context = { readme: repo_readme, contributing: repo_contributing }
+else:
+  repo_context = null
 
 # Validate we're on the correct branch (or can switch)
 # New branch pattern: {Domain}/{InitiativeId}/{size}-{phaseNumber}
@@ -112,6 +158,23 @@ for repo in initiative.target_repos:
       ⚠️ Discovery not run for repo: ${repo}
       Run @scout discover for better analysis context.
       Proceeding without discovery data.
+```
+
+### 1b. Constitution Compliance Gate (ADVISORY)
+
+```yaml
+# Invoke compliance-check to verify inherited constitution constraints
+# Mode: ADVISORY (log warnings, do not block)
+invoke: lens-work.compliance-check
+params:
+  phase: "p1"
+  phase_name: "Analysis"
+  initiative_id: ${initiative.id}
+  target_repos: ${initiative.target_repos}
+  mode: "ADVISORY"
+
+# Compliance check logs findings to _bmad-output/lens-work/compliance-reports/
+# Warnings are surfaced to user but do not block workflow progression
 ```
 
 ### 2. Start Phase (if needed)
@@ -252,7 +315,7 @@ params:
     - "_bmad-output/lens-work/state.yaml"
     - "_bmad-output/lens-work/initiatives/${initiative.id}.yaml"
     - "_bmad-output/lens-work/event-log.jsonl"
-    - "_bmad-output/planning-artifacts/"
+    - "${docs_path}/"
   message: "[lens-work] /pre-plan: Phase 1 Analysis — ${initiative.id}"
   branch: "${domain_prefix}/${initiative.id}/${size}-1"
 ```
@@ -279,9 +342,9 @@ Ready to continue?
 
 | Artifact | Location |
 |----------|----------|
-| Product Brief | `_bmad-output/planning-artifacts/product-brief.md` |
-| Brainstorm Notes | `_bmad-output/planning-artifacts/brainstorm-notes.md` |
-| Research Summary | `_bmad-output/planning-artifacts/research-summary.md` |
+| Product Brief | `${docs_path}/product-brief.md` |
+| Brainstorm Notes | `${docs_path}/brainstorm-notes.md` |
+| Research Summary | `${docs_path}/research-summary.md` |
 | Initiative State | `_bmad-output/lens-work/initiatives/${id}.yaml` |
 
 ---
@@ -308,5 +371,5 @@ Ready to continue?
 - [ ] state.yaml updated with phase p1
 - [ ] initiatives/{id}.yaml updated with p1 status
 - [ ] event-log.jsonl entry appended
-- [ ] Planning artifacts written (at minimum product-brief.md)
+- [ ] Planning artifacts written to `${docs_path}/` (at minimum product-brief.md)
 - [ ] All changes pushed to origin

@@ -16,7 +16,7 @@ flowchart LR
 
   TargetRoot --> Scout
   Scout --> AnalysisSummary[analysis-summary.md]
-  Scout --> DocBundle[docs_output_folder/lens-sync/{target}/*]
+  Scout --> DocBundle[docs_output_path/{domain}/{service}/*]
 
   DocBundle --> Link
   Link --> UpdateReport[lens-sync-report.md]
@@ -68,7 +68,7 @@ services:
 
 Generated docs live under:
 ```
-{docs_output_folder}/lens-sync/{target}/
+{docs_output_path}/{domain}/{service}/
 ```
 
 Minimum expected outputs:

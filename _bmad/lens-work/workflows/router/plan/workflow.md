@@ -45,6 +45,36 @@ initiative = load("_bmad-output/lens-work/initiatives/${state.active_initiative}
 size = initiative.size
 domain_prefix = initiative.domain_prefix
 
+# === Path Resolver (S01-S06: Context Enhancement) ===
+docs_path = initiative.docs.path    # e.g., "docs/BMAD/LENS/BMAD.Lens/context-enhancement-9bfe4e"
+repo_docs_path = "docs/${initiative.docs.domain}/${initiative.docs.service}/${initiative.docs.repo}"
+
+if docs_path == null or docs_path == "":
+  # Fallback for older initiatives without docs block
+  docs_path = "_bmad-output/planning-artifacts/"
+  repo_docs_path = null
+  warning: "⚠️ DEPRECATED: Initiative missing docs.path configuration."
+  warning: "  → Run: /compass migrate <initiative-id> to add docs.path"
+  warning: "  → This fallback will be removed in a future version."
+
+output_path = docs_path
+ensure_directory(output_path)
+
+# === Context Loader (S08: Context Enhancement) ===
+product_brief = load_file("${docs_path}/product-brief.md")
+prd = load_file("${docs_path}/prd.md")
+architecture = load_file("${docs_path}/architecture.md")
+
+if product_brief == null or prd == null or architecture == null:
+  FAIL("Required planning artifacts missing from ${docs_path}/")
+
+if repo_docs_path != null:
+  repo_readme = load_if_exists("${repo_docs_path}/README.md")
+  repo_setup = load_if_exists("${repo_docs_path}/SETUP.md")
+  repo_context = { readme: repo_readme, setup: repo_setup }
+else:
+  repo_context = null
+
 # Validate we're on the correct branch (or can switch)
 # Branch pattern: {Domain}/{InitiativeId}/{size}-{phaseNumber}
 expected_branch: "${domain_prefix}/${initiative.id}/${size}-3"
@@ -79,12 +109,34 @@ if not large_review_merged():
 
 # Verify P2 artifacts exist
 required_artifacts:
-  - "_bmad-output/planning-artifacts/prd.md"
-  - "_bmad-output/planning-artifacts/architecture.md"
+  - "${docs_path}/prd.md"
+  - "${docs_path}/architecture.md"
 
 for artifact in required_artifacts:
   if not file_exists(artifact):
-    warning: "Required artifact not found: ${artifact}."
+    # Fallback: check legacy path for backward compatibility
+    legacy_path = artifact.replace("${docs_path}/", "_bmad-output/planning-artifacts/")
+    if file_exists(legacy_path):
+      warning: "Found artifact at legacy path: ${legacy_path}. Consider migrating."
+    else:
+      warning: "Required artifact not found: ${artifact}."
+```
+
+### 1a. Constitution Compliance Gate (ADVISORY)
+
+```yaml
+# Invoke compliance-check to verify inherited constitution constraints
+# Mode: ADVISORY (log warnings, do not block)
+invoke: lens-work.compliance-check
+params:
+  phase: "p3"
+  phase_name: "Solutioning"
+  initiative_id: ${initiative.id}
+  target_repos: ${initiative.target_repos}
+  mode: "ADVISORY"
+
+# Compliance check logs findings to _bmad-output/lens-work/compliance-reports/
+# Warnings are surfaced to user but do not block workflow progression
 ```
 
 ### 2. Start Phase 3 — Auto-Branch Creation
@@ -150,9 +202,9 @@ params:
 # Reference Epic generation workflow from BMM module
 invoke: bmm.create-epics
 params:
-  architecture: "_bmad-output/planning-artifacts/architecture.md"
-  prd: "_bmad-output/planning-artifacts/prd.md"
-  output_path: "_bmad-output/planning-artifacts/"
+  architecture: "${docs_path}/architecture.md"
+  prd: "${docs_path}/prd.md"
+  output_path: "${docs_path}/"
   constitutional_context: ${constitutional_context}
 
 invoke: casey.finish-workflow
@@ -201,9 +253,9 @@ params:
 # Reference Story generation workflow from BMM module
 invoke: bmm.create-stories
 params:
-  epics: "_bmad-output/planning-artifacts/epics.md"
-  architecture: "_bmad-output/planning-artifacts/architecture.md"
-  output_path: "_bmad-output/planning-artifacts/"
+  epics: "${docs_path}/epics.md"
+  architecture: "${docs_path}/architecture.md"
+  output_path: "${docs_path}/"
   constitutional_context: ${constitutional_context}
 
 invoke: casey.finish-workflow
@@ -223,7 +275,7 @@ params:
     - architecture.md
     - epics.md
     - stories.md
-  output_path: "_bmad-output/planning-artifacts/"
+  output_path: "${docs_path}/"
   constitutional_context: ${constitutional_context}
 
 invoke: casey.finish-workflow
@@ -285,7 +337,7 @@ params:
     - "_bmad-output/lens-work/state.yaml"
     - "_bmad-output/lens-work/initiatives/${initiative.id}.yaml"
     - "_bmad-output/lens-work/event-log.jsonl"
-    - "_bmad-output/planning-artifacts/"
+    - "${docs_path}/"
   message: "[lens-work] /plan: Phase 3 Solutioning — ${initiative.id}"
   branch: "${domain_prefix}/${initiative.id}/${size}-3"
 ```
@@ -302,11 +354,11 @@ params:
 
 | Artifact | Location |
 |----------|----------|
-| Epics | `_bmad-output/planning-artifacts/epics.md` |
+| Epics | `${docs_path}/epics.md` |
 | Epic Party-Mode Review | `_bmad-output/planning-artifacts/epic-*-party-mode-review.md` |
 | Implementation Readiness Adversarial Report | `_bmad-output/planning-artifacts/implementation-readiness-report-*.md` |
-| Stories | `_bmad-output/planning-artifacts/stories.md` |
-| Readiness | `_bmad-output/planning-artifacts/readiness-checklist.md` |
+| Stories | `${docs_path}/stories.md` |
+| Readiness | `${docs_path}/readiness-checklist.md` |
 | Initiative State | `_bmad-output/lens-work/initiatives/${id}.yaml` |
 
 ---
@@ -316,7 +368,7 @@ params:
 | Error | Recovery |
 |-------|----------|
 | P2 not complete | Error with merge instructions |
-| Lead review not merged | Warn but allow proceeding |
+| Large review not merged | Warn but allow proceeding |
 | PRD/Architecture missing | Warn, proceeding may produce incomplete epics |
 | Dirty working directory | Prompt to stash or commit changes first |
 | Branch creation failed | Check remote connectivity, retry with backoff |
@@ -335,7 +387,7 @@ params:
 - [ ] state.yaml updated with phase p3
 - [ ] initiatives/{id}.yaml updated with p3 status and p2 gate passed
 - [ ] event-log.jsonl entry appended
-- [ ] Planning artifacts written (epics, stories, readiness-checklist)
+- [ ] Planning artifacts written to `${docs_path}/` (epics, stories, readiness-checklist)
 - [ ] Epic adversarial review executed and passed
 - [ ] Epic party-mode review executed and report generated
 - [ ] Final PBR PR opened (large → base)

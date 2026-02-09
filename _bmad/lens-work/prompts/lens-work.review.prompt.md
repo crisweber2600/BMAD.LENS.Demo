@@ -14,7 +14,7 @@ Use `#think` before approving readiness or flagging blockers.
 **Prerequisites:**
 - `/plan` phase complete (Phase 3 merged)
 - Stories validated and estimated
-- Lead review merged to base
+- Large review merged to base
 
 **Authorized Roles:** Scrum Master (gate owner)
 

@@ -32,14 +32,29 @@ state = load("_bmad-output/lens-work/state.yaml")
 initiative = load("_bmad-output/lens-work/initiatives/${state.active_initiative}.yaml")
 ```
 
+### 0a. Path Resolver (S01-S06: Context Enhancement)
+
+```yaml
+# === Path Resolver (S01-S06: Context Enhancement) ===
+docs_path = initiative.docs.path    # e.g., "docs/BMAD/LENS/BMAD.Lens/context-enhancement-9bfe4e"
+repo_docs_path = "docs/${initiative.docs.domain}/${initiative.docs.service}/${initiative.docs.repo}"
+
+if docs_path == null or docs_path == "":
+  # Fallback for older initiatives without docs block
+  docs_path = "_bmad-output/planning-artifacts/"
+  repo_docs_path = null
+  warning: "⚠️ DEPRECATED: Initiative missing docs.path configuration."
+  warning: "  → Run: /compass migrate <initiative-id> to add docs.path"
+  warning: "  → This fallback will be removed in a future version."
+
+ensure_directory(docs_path)
+```
+
 ### 1. Resolve Docs Path
 
 ```yaml
-# Use docs path stored in initiative config
-if initiative.docs.path == null or initiative.docs.path == "":
-  error: "Missing docs.path in initiative config. Re-run /new-* to fix."
-
-docs_root = initiative.docs.path
+# Use docs_path from path resolver
+docs_root = docs_path
 output_file = "${docs_root}/${output_filename}"
 ```
 
@@ -90,7 +105,7 @@ if "[ANSWER HERE]" in content:
 
 ```yaml
 # Use the batch file as the primary input for artifacts.
-output_root = phase_number == "4" ? "_bmad-output/implementation-artifacts/" : "_bmad-output/planning-artifacts/"
+output_root = phase_number == "4" ? "_bmad-output/implementation-artifacts/" : "${docs_path}/"
 
 if phase_number == "1":
   invoke: bmm.product-brief
@@ -101,7 +116,7 @@ if phase_number == "1":
 if phase_number == "2":
   invoke: bmm.create-prd
   params:
-    product_brief: "_bmad-output/planning-artifacts/product-brief.md"
+    product_brief: "${docs_path}/product-brief.md"
     output_path: ${output_root}
 
   invoke: bmm.create-ux-design
@@ -110,21 +125,21 @@ if phase_number == "2":
 
   invoke: bmm.create-architecture
   params:
-    prd: "_bmad-output/planning-artifacts/prd.md"
-    product_brief: "_bmad-output/planning-artifacts/product-brief.md"
+    prd: "${docs_path}/prd.md"
+    product_brief: "${docs_path}/product-brief.md"
     output_path: ${output_root}
 
 if phase_number == "3":
   invoke: bmm.create-epics
   params:
-    architecture: "_bmad-output/planning-artifacts/architecture.md"
-    prd: "_bmad-output/planning-artifacts/prd.md"
+    architecture: "${docs_path}/architecture.md"
+    prd: "${docs_path}/prd.md"
     output_path: ${output_root}
 
   invoke: bmm.create-stories
   params:
-    epics: "_bmad-output/planning-artifacts/epics.md"
-    architecture: "_bmad-output/planning-artifacts/architecture.md"
+    epics: "${docs_path}/epics.md"
+    architecture: "${docs_path}/architecture.md"
     output_path: ${output_root}
 
   invoke: bmm.readiness-checklist
@@ -141,7 +156,7 @@ if phase_number == "4":
   selected_story = extract_story_id(output_file)
   invoke: bmm.sprint-planning
   params:
-    stories: "_bmad-output/planning-artifacts/stories.md"
+    stories: "${docs_path}/stories.md"
 
   invoke: bmm.create-dev-story
   params:

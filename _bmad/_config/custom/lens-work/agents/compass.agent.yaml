@@ -146,6 +146,13 @@ agent:
       action: "display_lens"
       description: "[/lens] Show/change current lens focus (domain/service/microservice/feature)"
 
+    # Sync Commands (Daily Rate-Limited)
+    - trigger: /sync-now or fuzzy match on force sync or sync now
+      workflow: "{project-root}/_bmad/lens-work/workflows/utility/sync-and-select-branch/workflow.md"
+      description: "[/sync-now] Force immediate branch sync (overrides daily limit)"
+      params:
+        force_sync: true
+
     # Discovery Commands
     - trigger: /domain-map or fuzzy match on domain map or architecture map
       workflow: "{project-root}/_bmad/lens-work/workflows/discovery/domain-map/workflow.md"

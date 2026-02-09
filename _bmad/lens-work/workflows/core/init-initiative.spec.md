@@ -29,17 +29,17 @@ target_repo: api-gateway  # resolved from service map
 
 ```
 {domain_prefix}/{id}/base         # Initiative root
-├── {domain}/{id}/small               # Small team lane
+├── {domain}/{id}/small               # Small team size
 │   └── {domain}/{id}/small/p1        # Phase 1 (Analysis)
-└── {domain}/{id}/large                # Large review lane (created but empty)
+└── {domain}/{id}/large                # Large review size (created but empty)
 ```
 
 ### Sequence
 
 1. Generate initiative ID (e.g., `rate-limit-x7k2m9`)
 2. Create base branch from current HEAD
-3. Create small lane from base
-4. Create large lane from base
+3. Create small size from base
+4. Create large size from base
 5. Create p1 branch from small
 6. Checkout to `small/p1`
 7. Initialize state.yaml
@@ -52,7 +52,7 @@ target_repo: api-gateway  # resolved from service map
 ✅ Initiative created: rate-limit-x7k2m9
 ├── Base: lens/rate-limit-x7k2m9/base
 ├── Small: lens/rate-limit-x7k2m9/small
-├── Lead: lens/rate-limit-x7k2m9/lead
+├── Large: lens/rate-limit-x7k2m9/large
 ├── Phase: lens/rate-limit-x7k2m9/small/p1
 └── Ready for /pre-plan
 ```
@@ -66,7 +66,7 @@ target_repo: api-gateway  # resolved from service map
 | `start-workflow` | Create workflow branch within phase |
 | `finish-workflow` | Commit and push workflow branch |
 | `start-phase` | Create next phase branch |
-| `finish-phase` | Push phase branch to lane |
+| `finish-phase` | Push phase branch to size |
 
 ---
 

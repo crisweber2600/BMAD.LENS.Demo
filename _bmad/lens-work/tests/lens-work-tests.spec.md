@@ -103,25 +103,25 @@ created: 2026-02-05
 
 | # | Test | Expected Result |
 |---|------|-----------------|
-| 2.2.1 | Creates phase branch via Casey if missing | New branch created matching `{Domain}/{id}/{lane}-{N}` |
+| 2.2.1 | Creates phase branch via Casey if missing | New branch created matching `{Domain}/{id}/{size}-{N}` |
 | 2.2.2 | Validates phase ordering (can't skip phases) | Attempting to skip from p1 to p3 shows gate violation error |
 | 2.2.3 | Updates `state.yaml` `current.phase` | Phase field updated to target phase number |
-| 2.2.4 | Branch pattern matches `{Domain}/{id}/{lane}-{N}` | Regex validation passes for created branch name |
+| 2.2.4 | Branch pattern matches `{Domain}/{id}/{size}-{N}` | Regex validation passes for created branch name |
 | 2.2.5 | Cannot switch to phase without passing previous gate | Gate check blocks advancement; shows required artifacts |
 | 2.2.6 | Switching to current phase is a no-op | Message: "Already on phase {N}" |
 
-### 2.3 Switch Lane
+### 2.3 Switch Size
 
 **Priority:** P1  
-**Category:** Branch / Lane  
+**Category:** Branch / Size  
 **Automation:** Git-verifiable
 
 | # | Test | Expected Result |
 |---|------|-----------------|
-| 2.3.1 | Creates lane branch if missing | New branch created for lane |
-| 2.3.2 | Updates initiative config `lane` | `initiatives/{id}.yaml` lane updated to target lane |
-| 2.3.3 | Validates lane name against allowed values | Invalid lane names rejected with list of valid options |
-| 2.3.4 | Lane switch preserves phase context | Phase doesn't reset when switching lanes |
+| 2.3.1 | Creates size branch if missing | New branch created for size |
+| 2.3.2 | Updates initiative config `size` | `initiatives/{id}.yaml` size updated to target size |
+| 2.3.3 | Validates size name against allowed values | Invalid size names rejected with list of valid options |
+| 2.3.4 | Size switch preserves phase context | Phase doesn't reset when switching sizes |
 
 ---
 
@@ -139,7 +139,7 @@ created: 2026-02-05
 | 3.1.2 | Creates base branch | `{Domain}/{id}/base` branch exists |
 | 3.1.3 | Creates small branch | `{Domain}/{id}/small` branch exists |
 | 3.1.4 | Creates large branch | `{Domain}/{id}/large` branch exists |
-| 3.1.5 | Creates p1 branch | `{Domain}/{id}/{lane}-1` branch exists |
+| 3.1.5 | Creates p1 branch | `{Domain}/{id}/{size}-1` branch exists |
 | 3.1.6 | Writes initiative config with required fields | `initiatives/{id}.yaml` contains: `id`, `name`, `layer`, `target_repos`, `gates`, `blocks` |
 | 3.1.7 | Logs init event to `event-log.jsonl` | Last entry has `event: init-initiative`, matching `initiative_id` |
 | 3.1.8 | Returns control to Compass | After init, Compass menu is displayed |
@@ -177,9 +177,10 @@ created: 2026-02-05
 |---|------|-----------------|
 | 4.1.1.1 | Loads two-file state | Both `state.yaml` and active initiative file read |
 | 4.1.1.2 | Gate check allows entry at p1 | Pre-plan available when on phase 1 |
-| 4.1.1.3 | Auto-creates phase branch if missing | Branch `{Domain}/{id}/{lane}-1` created if not present |
+| 4.1.1.3 | Auto-creates phase branch if missing | Branch `{Domain}/{id}/{size}-1` created if not present |
 | 4.1.1.4 | State updates persist after execution | `state.yaml` updated with workflow progress |
 | 4.1.1.5 | Git discipline validates clean state | Dirty working directory blocks workflow start |
+| 4.1.1.6 | Constitutional context is injected | `constitutional_context` is resolved and available before analysis workflow calls |
 
 #### 4.1.2 Spec Router (`/spec`)
 
@@ -187,9 +188,10 @@ created: 2026-02-05
 |---|------|-----------------|
 | 4.1.2.1 | Loads two-file state | Both files read successfully |
 | 4.1.2.2 | Gate check requires p1 completion | Cannot enter spec without pre-plan artifacts |
-| 4.1.2.3 | Creates p2 branch via Casey | Branch `{Domain}/{id}/{lane}-2` created |
+| 4.1.2.3 | Creates p2 branch via Casey | Branch `{Domain}/{id}/{size}-2` created |
 | 4.1.2.4 | State updates persist | Phase advanced to p2 in state |
 | 4.1.2.5 | Git discipline validates clean state | Blocks on dirty working directory |
+| 4.1.2.6 | Constitutional context is injected | `constitutional_context` is resolved before PRD/UX/architecture workflows run |
 
 #### 4.1.3 Plan Router (`/plan`)
 
@@ -197,9 +199,12 @@ created: 2026-02-05
 |---|------|-----------------|
 | 4.1.3.1 | Loads two-file state | Both files read successfully |
 | 4.1.3.2 | Gate check requires p2 completion | Cannot enter plan without spec artifacts |
-| 4.1.3.3 | Creates p3 branch via Casey | Branch `{Domain}/{id}/{lane}-3` created |
+| 4.1.3.3 | Creates p3 branch via Casey | Branch `{Domain}/{id}/{size}-3` created |
 | 4.1.3.4 | State updates persist | Phase advanced to p3 in state |
 | 4.1.3.5 | Git discipline validates clean state | Blocks on dirty working directory |
+| 4.1.3.6 | Constitutional context is injected | `constitutional_context` is resolved before epics/stories/readiness workflows run |
+| 4.1.3.7 | Epic adversarial stress gate runs | `bmm.check-implementation-readiness` executes after epics generation and blocks on fail |
+| 4.1.3.8 | Epic party-mode teardown runs per epic | `core.party-mode` executes for each epic and writes `epic-*-party-mode-review.md` files |
 
 #### 4.1.4 Review Router (`/review`)
 
@@ -210,6 +215,8 @@ created: 2026-02-05
 | 4.1.4.3 | Creates review branch if needed | Branch created following naming convention |
 | 4.1.4.4 | State updates persist | Review status tracked in state |
 | 4.1.4.5 | Git discipline validates clean state | Blocks on dirty working directory |
+| 4.1.4.6 | Constitutional context is injected | `constitutional_context` is resolved before readiness and compliance checks |
+| 4.1.4.7 | Compliance gate blocks constitutional FAILs | Any FAIL from compliance checks exits `/review` with gate blocked |
 
 #### 4.1.5 Dev Router (`/dev`)
 
@@ -217,9 +224,17 @@ created: 2026-02-05
 |---|------|-----------------|
 | 4.1.5.1 | Loads two-file state | Both files read successfully |
 | 4.1.5.2 | Gate check requires review completion | Cannot enter dev without review pass |
-| 4.1.5.3 | Creates p4 branch via Casey | Branch `{Domain}/{id}/{lane}-4` created |
+| 4.1.5.3 | Creates p4 branch via Casey | Branch `{Domain}/{id}/{size}-4` created |
 | 4.1.5.4 | State updates persist | Phase advanced to p4 in state |
 | 4.1.5.5 | Git discipline validates clean state | Blocks on dirty working directory |
+| 4.1.5.6 | Constitutional context is injected | `constitutional_context` is resolved before implementation guidance and review loops |
+| 4.1.5.7 | Dev story compliance gate blocks FAILs | `scribe.compliance-check` on dev story exits `/dev` on any FAIL |
+| 4.1.5.8 | Adversarial code review is mandatory | `bmm.code-review` executes when implementation is signaled complete |
+| 4.1.5.9 | Code-review compliance gate blocks FAILs | `scribe.compliance-check` on code review report exits `/dev` on any FAIL |
+| 4.1.5.10 | Party-mode teardown runs after code review | `core.party-mode` executes and writes `party-mode-review-${story_id}.md` |
+| 4.1.5.11 | Epic completion is detected in `/dev` | Current story resolves to parent epic and epic completion is evaluated before workflow exit |
+| 4.1.5.12 | Epic adversarial review runs on epic completion | `bmm.check-implementation-readiness` executes for completed epic and blocks `/dev` on fail |
+| 4.1.5.13 | Epic party-mode teardown runs on epic completion | `core.party-mode` writes `epic-*-party-mode-review.md` and blocks `/dev` on unresolved issues |
 
 ### 4.2 Utility Workflows
 
@@ -230,11 +245,11 @@ created: 2026-02-05
 | # | Test | Expected Result |
 |---|------|-----------------|
 | 4.2.1 | Status shows both files | Output includes `state.yaml` summary AND initiative details |
-| 4.2.2 | Resume loads correct context | Initiative, phase, lane, and workflow restored from state |
+| 4.2.2 | Resume loads correct context | Initiative, phase, size, and workflow restored from state |
 | 4.2.3 | Resume re-enters workflow at correct step | Workflow step counter matches saved progress |
 | 4.2.4 | Check-repos validates all repos | Each repo in `service-map.yaml` checked for existence and git state |
 | 4.2.5 | Onboarding creates profile | User profile file created in `_bmad-output/lens-work/` |
-| 4.2.6 | Switch workflow handles all target types | Supports `initiative`, `phase`, and `lane` switch targets |
+| 4.2.6 | Switch workflow handles all target types | Supports `initiative`, `phase`, and `size` switch targets |
 | 4.2.7 | Fix-state corrects inconsistencies | Detects and repairs state/branch mismatches |
 | 4.2.8 | Archive marks initiative as archived | Initiative file updated with `archived: true`, branches cleaned |
 | 4.2.9 | Sync workflow synchronizes state to remote | State pushed to correct branch after sync |
@@ -389,7 +404,7 @@ created: 2026-02-05
 | 7.5 | Final step creates targeted commit | init-initiative, finish-workflow | Commit message includes initiative_id, phase, and workflow context |
 | 7.6 | Final step pushes to remote | init-initiative, finish-workflow | `git push` executed after commit |
 | 7.7 | Commit message format consistent | All committing workflows | Format: `lens-work: {workflow} [{initiative_id}] {description}` |
-| 7.8 | Branch name parsed correctly | finish-workflow | Initiative ID, lane, phase extracted from `{Domain}/{id}/{lane}-{N}-{workflow}` |
+| 7.8 | Branch name parsed correctly | finish-workflow | Initiative ID, size, phase extracted from `{Domain}/{id}/{size}-{N}-{workflow}` |
 | 7.9 | Non-mutating workflows skip commit | repo-discover, repo-document, repo-status | No git commits created by read-only workflows |
 | 7.10 | Utility workflows commit state changes | bootstrap, reconcile | State file changes committed with context |
 
@@ -467,13 +482,13 @@ created: 2026-02-05
 | 1. State Management | 6 | 6 | 0 | 0 | 12 |
 | 2. Branch Switching | 10 | 4 | 0 | 0 | 14 |
 | 3. Initiative Creation | 9 | 7 | 0 | 0 | 16 |
-| 4. Workflow Execution | 25 | 11 | 0 | 0 | 36 |
+| 4. Workflow Execution | 40 | 11 | 0 | 0 | 51 |
 | 5. Agent Integration | 18 | 15 | 0 | 0 | 33 |
 | 6. Error Handling | 8 | 8 | 0 | 0 | 16 |
 | 7. Git Discipline | 10 | 0 | 0 | 0 | 10 |
 | 8. Module Structure | 0 | 0 | 10 | 0 | 10 |
 | 9. Cross-Cutting | 0 | 0 | 12 | 0 | 12 |
-| **Total** | **86** | **51** | **22** | **0** | **159** |
+| **Total** | **101** | **51** | **22** | **0** | **174** |
 
 ---
 

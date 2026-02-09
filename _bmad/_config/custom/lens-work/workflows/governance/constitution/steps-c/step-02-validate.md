@@ -4,6 +4,57 @@ Check new constitution against parent constitutions for contradictions.
 
 ---
 
+## Testability Evaluation
+
+**Before inheritance validation, check articles for testability:**
+
+```
+🔬 **Testability Evaluation**
+
+Analyzing articles for verifiable evidence requirements...
+```
+
+**For each article:**
+1. Check if `evidence_required` field is specific and measurable
+2. Flag vague requirements:
+   - ❌ "Good test coverage" → VAGUE
+   - ✅ "Test suite with >80% code coverage" → SPECIFIC
+   - ❌ "Should follow best practices" → VAGUE
+   - ✅ "Code review approval with checklist completed" → SPECIFIC
+
+**Display flagged articles:**
+```
+{if vague articles found:}
+⚠️ **Testability Issues Detected**
+
+The following articles have vague or unmeasurable evidence requirements:
+
+{for each vague article:}
+**Article {n}: {title}**
+Current evidence: "{vague_evidence}"
+
+Issue: {description}
+
+Suggested improvements:
+{suggestions}
+
+[S]pecify better evidence | [K]eep as-is | [E]dit article
+{endfor}
+
+{if no vague articles:}
+✅ All articles have specific, measurable evidence requirements.
+{endif}
+```
+
+**Capture responses:**
+- If **S**pecify: Prompt for revised evidence requirement
+- If **K**eep: Mark as accepted (add warning note to constitution)
+- If **E**dit: Return to step-01-gather to revise article
+
+**Continue only after all articles either pass or are explicitly accepted as-is.**
+
+---
+
 ## Load Parent Constitutions
 
 **IF layer_type is NOT Domain:**

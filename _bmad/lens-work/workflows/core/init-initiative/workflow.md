@@ -15,8 +15,8 @@ superseded_by: "router/init-initiative"
 > The router version supports:
 > - Two-file state architecture (personal state + shared initiative config)
 > - New branch naming: `{Domain}/{InitiativeId}/{size}-{phaseNumber}-{workflow}`
-> - Lane stored in shared initiative config
-> - `large` lane (replaces legacy `lead`)
+> - Size stored in shared initiative config
+> - `large` size (replaces legacy `lead`)
 > - All branches pushed to remote immediately
 
 **Purpose:** _Legacy_ — Create the full branch topology for a new initiative in the BMAD control repo.
@@ -47,30 +47,30 @@ initiative_id=$(echo "${initiative_name}" | tr '[:upper:]' '[:lower:]' | tr ' ' 
 
 ```bash
 # From current HEAD in BMAD control repo
-git checkout -b "lens/${initiative_id}/base"
-git push -u origin "lens/${initiative_id}/base"
+git checkout -b "bmad/${initiative_id}/base"
+git push -u origin "bmad/${initiative_id}/base"
 ```
 
-### 3. Create Lane Branches
+### 3. Create Size Branches
 
 ```bash
-# Small team lane (planning happens here)
-git checkout -b "lens/${initiative_id}/small"
-git push -u origin "lens/${initiative_id}/small"
+# Small team size (planning happens here)
+git checkout -b "bmad/${initiative_id}/small"
+git push -u origin "bmad/${initiative_id}/small"
 
-# Large review lane (created but empty until p2 complete)
-git checkout "lens/${initiative_id}/base"
-git checkout -b "lens/${initiative_id}/lead"
-git push -u origin "lens/${initiative_id}/lead"
+# Large review size (created but empty until p2 complete)
+git checkout "bmad/${initiative_id}/base"
+git checkout -b "bmad/${initiative_id}/large"
+git push -u origin "bmad/${initiative_id}/large"
 ```
 
 ### 4. Create Phase 1 Branch
 
 ```bash
-# Phase 1 (Analysis) from small lane
-git checkout "lens/${initiative_id}/small"
-git checkout -b "lens/${initiative_id}/small/p1"
-git push -u origin "lens/${initiative_id}/small/p1"
+# Phase 1 (Analysis) from small size
+git checkout "bmad/${initiative_id}/small"
+git checkout -b "bmad/${initiative_id}/small/p1"
+git push -u origin "bmad/${initiative_id}/small/p1"
 ```
 
 ### 5. Initialize State
@@ -94,8 +94,8 @@ current:
   size: small
 
 branches:
-  base: "lens/${initiative_id}/base"
-  active: "lens/${initiative_id}/small/p1"
+  base: "bmad/${initiative_id}/base"
+  active: "bmad/${initiative_id}/small/p1"
 
 gates: []
 blocks: []
@@ -115,10 +115,10 @@ Output to Compass:
 
 ```
 ✅ Initiative created: ${initiative_id}
-├── Base: lens/${initiative_id}/base
-├── Small: lens/${initiative_id}/small
-├── Lead: lens/${initiative_id}/lead
-├── Phase: lens/${initiative_id}/small/p1
+├── Base: bmad/${initiative_id}/base
+├── Small: bmad/${initiative_id}/small
+├── Large: bmad/${initiative_id}/large
+├── Phase: bmad/${initiative_id}/small/p1
 └── Ready for /pre-plan
 ```
 

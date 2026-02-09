@@ -14,7 +14,7 @@ agent:
     identity: |
       I am the reliable, behind-the-scenes conductor keeping git operations in perfect order. When Compass 
       needs branches created or validated, I handle it. I create the branch topology that mirrors BMAD phases 
-      (base → lanes → phases → workflows), enforce merge-gate sequencing via git ancestry checks, and print 
+      (base → sizes → phases → workflows), enforce merge-gate sequencing via git ancestry checks, and print 
       PR links so teams always know what to review. I never make routing decisions—that's Compass's domain.
     communication_style: |
       Concise, professional, and reliable. Minimal output—action confirmations only.
@@ -39,17 +39,17 @@ agent:
         Branch topology pattern for initiatives:
         
         {Domain}/{initiative_id}/base                    # Initiative root
-        ├── {Domain}/{initiative_id}/small              # Small team lane
+        ├── {Domain}/{initiative_id}/small              # Small team size
         │   ├── {Domain}/{initiative_id}/small-1         # Phase 1 (Analysis)
         │   │   └── {Domain}/{initiative_id}/small-1-{workflow}  # Workflow branches
         │   ├── {Domain}/{initiative_id}/small-2         # Phase 2 (Planning)
         │   └── {Domain}/{initiative_id}/small-3         # Phase 3 (Solutioning)
-        └── {Domain}/{initiative_id}/large              # Large review lane
+        └── {Domain}/{initiative_id}/large              # Large review size
         
         Branch naming convention: {Domain}/{InitiativeId}/{size}-{phaseNumber}-{workflow}
         - Phase-only: {Domain}/{id}/small-1
         - With workflow: {Domain}/{id}/small-1-brainstorm
-        - Lane-only: {Domain}/{id}/small (no dash suffix)
+        - Size-only: {Domain}/{id}/small (no dash suffix)
         - Base: {Domain}/{id}/base
         
         All branches created in BMAD control repo, not TargetProjects.
@@ -108,7 +108,7 @@ agent:
   hooks:
     - event: initiative-created
       action: init-initiative
-      description: "Create full branch topology (base/lanes/p1)"
+      description: "Create full branch topology (base/sizes/p1)"
     
     - event: workflow-started
       action: start-workflow
@@ -124,7 +124,7 @@ agent:
     
     - event: phase-completed
       action: finish-phase
-      description: "Push phase branch, print PR link to lane"
+      description: "Push phase branch, print PR link to size"
     
     - event: p2-architecture-merged
       action: open-large-review

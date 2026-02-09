@@ -435,6 +435,53 @@ output: |
 
 ---
 
+---
+
+## Path-Aware Validation
+
+When validating artifact existence, check the docs_path first, then fall back to legacy path:
+
+```pseudocode
+function validate_artifact(artifact_name, docs_path):
+  primary = "${docs_path}/${artifact_name}"
+  legacy = "_bmad-output/planning-artifacts/${artifact_name}"
+  
+  if file_exists(primary):
+    return { path: primary, status: "OK" }
+  elif file_exists(legacy):
+    emit_warning("⚠️ Artifact found at legacy path. Run migration: /compass migrate")
+    return { path: legacy, status: "LEGACY" }
+  else:
+    return { path: null, status: "MISSING" }
+```
+
+### Path Resolution Order
+
+1. **Primary**: `${docs_path}/${artifact_name}` — Initiative-specific docs path (new)
+2. **Fallback**: `_bmad-output/planning-artifacts/${artifact_name}` — Legacy flat path (deprecated)
+3. **Missing**: Artifact not found at either location
+
+### Deprecation Behavior
+
+When an artifact is found ONLY at the legacy path:
+- Validation still **passes** (artifact exists)
+- A **deprecation warning** is emitted in the validation output
+- The warning includes the migration command: `/compass migrate`
+- The validation result includes `status: "LEGACY"` for programmatic detection
+
+## Required Planning Artifacts
+
+| Artifact | Required By Phase |
+|----------|------------------|
+| product-brief.md | spec, plan, review |
+| prd.md | plan, review |
+| architecture.md | plan, review |
+| epics.md | review |
+| stories.md | review |
+| readiness-checklist.md | review |
+
+---
+
 ## Related Includes
 
 - **docs-path.md** — Canonical paths that validators check

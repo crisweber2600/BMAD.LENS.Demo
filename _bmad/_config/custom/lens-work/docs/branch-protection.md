@@ -2,29 +2,29 @@
 
 ## Overview
 
-lens-work creates a structured branch topology under the `{Domain}/` prefix. Proper branch protection rules ensure lifecycle integrity — preventing accidental pushes to lane branches, enforcing review gates, and keeping the merge flow aligned with BMAD phases.
+lens-work creates a structured branch topology under the `{Domain}/` prefix. Proper branch protection rules ensure lifecycle integrity — preventing accidental pushes to size branches, enforcing review gates, and keeping the merge flow aligned with BMAD phases.
 
 ## Branch Topology Recap
 
 ```
 {Domain}/{id}/base          ← Initiative root (created once, rarely touched)
-{Domain}/{id}/small         ← Small-team lane (planning phases merge here)
-{Domain}/{id}/large         ← Large review lane (receives from small after review)
+{Domain}/{id}/small         ← Small-team size (planning phases merge here)
+{Domain}/{id}/large         ← Large review size (receives from small after review)
 {Domain}/{id}/small-1       ← Phase branch (Analysis)
 {Domain}/{id}/small-1-*     ← Workflow branches (individual work)
 ```
 
 ## Recommended Protection Rules
 
-### Lane Branches (small, large)
+### Size Branches (small, large)
 
 | Rule | Value | Rationale |
 |------|-------|-----------|
 | Require PR for merge | ✅ Yes | Workflow → phase merges must be reviewable |
 | Required reviewers | 1+ | At least one team member reviews completed phase work |
 | Dismiss stale reviews | ✅ Yes | Re-review if workflow branch changes after approval |
-| Allow force push | ❌ No | Lane branches are accumulation points — never rewrite |
-| Allow deletion | ❌ No | Lane branches persist for the initiative lifetime |
+| Allow force push | ❌ No | Size branches are accumulation points — never rewrite |
+| Allow deletion | ❌ No | Size branches persist for the initiative lifetime |
 
 ### Phase Branches (p1, p2, p3, p4)
 
@@ -33,7 +33,7 @@ lens-work creates a structured branch topology under the `{Domain}/` prefix. Pro
 | Require PR for merge | ✅ Yes | Workflow branches merge into phase via PR |
 | Required reviewers | 0–1 | Optional for solo dev, recommended for teams |
 | Allow force push | ❌ No | Phase branches track sequential workflow merges |
-| Allow deletion | ✅ After merge | Clean up after phase → lane merge |
+| Allow deletion | ✅ After merge | Clean up after phase → size merge |
 
 ### Workflow Branches (w/*)
 
@@ -43,7 +43,7 @@ lens-work creates a structured branch topology under the `{Domain}/` prefix. Pro
 | Allow force push | ✅ Yes | Developer may rebase during active work |
 | Allow deletion | ✅ After merge | Clean up after workflow → phase merge |
 
-## Lane-to-Lane Merge Reviews
+## Size-to-Size Merge Reviews
 
 The `small → large` merge is a critical gate representing the **Large Review** phase. This merge should always require:
 

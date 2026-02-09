@@ -2,9 +2,9 @@
 
 ## Overview
 
-lens-work's branch topology maps naturally to CI/CD pipelines. Each branch level (workflow, phase, lane) represents a different validation scope, enabling progressively stricter checks as work flows toward the base branch.
+lens-work's branch topology maps naturally to CI/CD pipelines. Each branch level (workflow, phase, size) represents a different validation scope, enabling progressively stricter checks as work flows toward the base branch.
 
-> **IMPORTANT:** Replace `{Domain}` in all branch patterns with your actual domain prefix (e.g., `lens`, `payment`, `auth`). For example, `{Domain}/*/small-*-*` becomes `lens/*/small-*-*` or `payment/*/small-*-*`. See [lane-topology.md](lane-topology.md) for branch naming conventions.
+> **IMPORTANT:** Replace `{Domain}` in all branch patterns with your actual domain prefix (e.g., `lens`, `payment`, `auth`). For example, `{Domain}/*/small-*-*` becomes `lens/*/small-*-*` or `payment/*/small-*-*`. See [size-topology.md](size-topology.md) for branch naming conventions.
 
 ## Branch-Level CI Strategy
 
@@ -12,7 +12,7 @@ lens-work's branch topology maps naturally to CI/CD pipelines. Each branch level
 |---|---|---|
 | `{Domain}/*/small-*-*` | Fast checks: lint, unit tests, format | Push |
 | `{Domain}/*/small-*` | Full validation: integration tests, artifact checks | PR merge from workflow |
-| `{Domain}/*/small` | Lane validation: cross-phase consistency | PR merge from phase |
+| `{Domain}/*/small` | Size validation: cross-phase consistency | PR merge from phase |
 | `{Domain}/*/large` | Large review: full regression, security scan | PR merge from small |
 | `{Domain}/*/base` | Release candidate: E2E, deploy preview | PR merge from large |
 

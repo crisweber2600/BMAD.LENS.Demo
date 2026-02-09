@@ -20,7 +20,7 @@ Create a workflow branch with merge-gate validation.
 ### Sequence
 
 1. Validate merge gate (previous workflow must be merged)
-2. Create branch: `{domain}/{id}/{lane}/p{phase}/w/{workflow_name}`
+2. Create branch: `{domain}/{id}/{size}/p{phase}/w/{workflow_name}`
 3. Checkout to new branch
 4. Update state.yaml
 5. Log to event-log.jsonl
@@ -64,12 +64,12 @@ First workflow of a new phase
 
 ### Purpose
 
-Create phase branch from lane.
+Create phase branch from size.
 
 ### Sequence
 
 1. Validate previous phase complete (all workflows merged)
-2. Create branch: `{domain}/{id}/{lane}/p{phase_number}`
+2. Create branch: `{domain}/{id}/{size}/p{phase_number}`
 3. Checkout to new branch
 4. Update state.yaml
 5. Log to event-log.jsonl
@@ -84,13 +84,13 @@ All workflows in phase complete
 
 ### Purpose
 
-Push phase branch and print PR to lane.
+Push phase branch and print PR to size.
 
 ### Sequence
 
 1. Validate all workflows merged
 2. Push phase branch
-3. Print PR link: `{remote}/compare/{lane}...{phase}`
+3. Print PR link: `{remote}/compare/{size}...{phase}`
 4. Update state.yaml
 5. Log to event-log.jsonl
 
@@ -109,7 +109,7 @@ Open PR from small → large for large review.
 ### Sequence
 
 1. Validate p2 complete
-2. Print PR link: `{remote}/compare/lead...small`
+2. Print PR link: `{remote}/compare/large...small`
 3. Log to event-log.jsonl
 
 ---

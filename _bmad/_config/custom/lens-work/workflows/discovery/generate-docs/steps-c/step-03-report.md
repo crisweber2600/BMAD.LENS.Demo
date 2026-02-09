@@ -21,7 +21,7 @@ Persist **six** documentation outputs to the docs folder, validate written files
 ```yaml
 output_resolution:
   base_path: lens_config.sync.docs_output_path
-  target_path: "{base_path}/lens-sync/{target.name}/"
+  target_path: "{base_path}/{domain}/{service}/"
   
   files:
     - source: doc_outputs.architecture
